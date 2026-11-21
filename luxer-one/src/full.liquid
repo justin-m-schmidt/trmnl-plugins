@@ -1,30 +1,34 @@
+{% assign xl = false %}{% if trmnl.device.width > 1000 or trmnl.device.height > 1000 %}{% assign xl = true %}{% endif %}
+{% assign tall = false %}{% if trmnl.device.orientation == "portrait" or trmnl.device.height > trmnl.device.width %}{% assign tall = true %}{% endif %}
+{% assign qr = false %}{% if pickup_url and pickup_url != "" %}{% assign qr = true %}{% endif %}{% assign qsize = pickup_qr %}{% if xl %}{% assign qsize = pickup_qr | times: 8 | divided_by: 5 %}{% endif %}
 {% if state == "auth" or state == "error" %}
-  {% render "lx_message", state: state, step: step, email: email, field: field, error: error %}
+  {% render "lx_message", state: state, step: step, email: email, field: field, error: error, xl: xl %}
 {% elsif count == 0 %}
-<div class="layout layout--col layout--center" style="gap:14px;">
-  {% render "lx_locker", size: 210 %}
-  <span class="value value--large">All picked up</span>
-  <span class="label">No packages waiting in your {% if multi %}lockers{% else %}locker{% endif %}</span>
-  {% if picked_total and picked_total > 0 %}<span class="label" style="border:2px solid #000; border-radius:999px; padding:3px 16px;"><span style="font-weight:700;">{{ picked_total }}{% if picked_more %}+{% endif %}</span> picked up so far</span>{% endif %}
+<div class="layout layout--col layout--center gap--[14px]">
+  {% if xl %}{% render "lx_locker", size: 330 %}{% else %}{% render "lx_locker", size: 210 %}{% endif %}
+  <span class="value value--large lg:value--xlarge">All picked up</span>
+  <span class="label lg:label--large">No packages waiting in your {% if multi %}lockers{% else %}locker{% endif %}</span>
+  {% if picked_total and picked_total > 0 %}<span class="label label--outline lg:label--large"><span><span style="font-weight:700;">{{ picked_total }}{% if picked_more %}+{% endif %}</span> picked up so far</span></span>{% endif %}
   {% if notice and notice != "" %}{% render "lx_people", people: people %}{% endif %}
 </div>
 {% else %}
 <div class="layout layout--col layout--stretch-x">
-  <div style="display:flex; align-items:center; gap:36px; width:100%;">
-    <div style="flex:none; width:310px; display:flex; flex-direction:column; align-items:center; gap:10px;">
-      <div style="display:flex; align-items:center; gap:14px;">
-        {% render "lx_package", size: 150 %}
-        <span class="value value--xxxlarge">{{ count }}</span>
+  <div class="flex flex--row flex--center-y portrait:flex--col portrait:flex--center-x gap--[36px] w--full">
+    <div class="flex flex--col flex--center-x gap--[10px] w--[39cqw] portrait:w--full" style="flex:none;">
+      <div class="flex flex--row flex--center-y gap--[14px]">
+        {% if xl %}{% render "lx_package", size: 240 %}{% else %}{% render "lx_package", size: 150 %}{% endif %}
+        <span class="value value--xxxlarge lg:value--giga">{{ count }}</span>
       </div>
-      <span class="label" style="font-weight:700;">{{ noun | capitalize }} to pick up</span>
+      <span class="label lg:label--large" style="font-weight:700;">{{ noun | capitalize }} to pick up</span>
       {% if multi %}{% render "lx_people", people: people %}{% endif %}
     </div>
-    <div style="flex:1; min-width:0; border-left:2px solid #000; padding-left:28px; display:flex; flex-direction:column; gap:12px;">
-      {% if pickup_url and pickup_url != "" %}
-      {% render "lx_list", packages: packages, count: count, rows: 3, big: true, pad: 8 %}
-      {% render "lx_qr", url: pickup_url, size: pickup_qr %}
+    <div class="flex flex--col gap--[12px] stretch-x portrait:w--full" style="min-width:0;{% if tall %} border-top:2px solid #000; padding-top:16px;{% else %} border-left:2px solid #000; padding-left:28px;{% endif %}">
+      {% assign rows = 4 %}{% if qr %}{% assign rows = 3 %}{% endif %}{% if tall %}{% assign rows = rows | plus: 2 %}{% endif %}
+      {% if qr %}
+      {% render "lx_list", packages: packages, count: count, rows: rows, big: true, pad: 8, xl: xl %}
+      {% render "lx_qr", url: pickup_url, size: qsize %}
       {% else %}
-      {% render "lx_list", packages: packages, count: count, rows: 4, big: true, pad: 11 %}
+      {% render "lx_list", packages: packages, count: count, rows: rows, big: true, pad: 11, xl: xl %}
       {% endif %}
     </div>
   </div>
