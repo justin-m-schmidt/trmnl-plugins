@@ -18,7 +18,20 @@ async function gql(cookie, query) {
     try { return JSON.parse(text); } catch { return { status: res.status, text: text.slice(0, 300) }; }
   } catch (e) { return { fetchError: String(e?.message ?? e) }; }
 }
-const msg = (r) => (r?.errors ? r.errors.map((e) => e.message).join(" / ") : JSON.stringify(r)).slice(0, 900);
+const CAND = "start end date period title cursor nextCursor summary stepSummary strain strainScore strainLevel score level label value steps totalSteps stepGoal goal data id type rank ranking position region state stateName area name pet petId window total count change delta trend previousRank rankChange percentile leaderboard entries items rankings pets top".split(" ");
+function digest(r) {
+  if (!r?.errors) return JSON.stringify(r).slice(0, 900);
+  const bad = {};
+  const notes = [];
+  for (const e of r.errors) {
+    const m = /Cannot query field "(\w+)" on type "(\w+)"\.(.*)/.exec(e.message);
+    if (m) { (bad[m[2]] ??= new Set()).add(m[1]); if (m[3].trim()) notes.push(`${m[2]}.${m[1]}:${m[3].trim()}`); }
+    else notes.push(e.message);
+  }
+  const valid = Object.entries(bad).map(([t, s]) => `${t} VALID[${CAND.filter((c) => !s.has(c)).join(",")}]`);
+  return `${valid.join(" ; ")} NOTES[${notes.join(" / ")}]`.slice(0, 2500);
+}
+const raw = (r) => (r?.errors ? r.errors.map((e) => e.message).join(" / ") : JSON.stringify(r)).slice(0, 1200);
 async function run(input) {
   try {
     const cookie = await login(setting(input, "email"), setting(input, "password"));
@@ -26,16 +39,15 @@ async function run(input) {
     const id = u?.data?.currentUser?.userHouseholds?.[0]?.household?.pets?.[0]?.id;
     if (!id) return { probe: JSON.stringify(u).slice(0, 800) };
     const p = (b) => `{ pet(id: "${id}") { ${b} } }`;
-    const guesses = ["strain", "strainFeed", "strainScore", "currentStrain", "rank", "ranking", "rankings", "leaderboard", "leaderboards", "stateRank", "leaderboardRank", "currentRank", "activityRank", "stepRank"];
-    const jobs = [
-      ...guesses.map((g) => [`pet.${g}`, p(g)]),
-      ["stepFeed.zzz", p(`stepFeed(period: DAY) { zzz }`)],
-      ["stepFeed.args", p(`stepFeed(period: DAY, zzz: 1) { __typename }`)],
-      ["summary.zzz", p(`currentActivitySummary(period: DAILY) { zzz strain strainScore rank ranking }`)],
-      ["root", `{ leaderboard rank rankings strain }`],
-    ];
-    const out = await Promise.all(jobs.map(async ([k, q]) => `${k} => ${msg(await gql(cookie, q))}`));
-    return { probe: out.join("\n").slice(0, 9000) };
+    const [a, b, c, d, e, f] = await Promise.all([
+      gql(cookie, p(`stepFeed(period: DAY) { ${CAND.join(" ")} }`)),
+      gql(cookie, `{ petRanking { ${CAND.join(" ")} } }`),
+      gql(cookie, `{ petRanking(zzz: 1) { __typename } }`),
+      gql(cookie, `{ leaderboard(window: ZZZ) { __typename } }`),
+      gql(cookie, `{ leaderboard(window: ZZZ, zzz: 1) { ${CAND.join(" ")} } }`),
+      gql(cookie, p(`stepFeed(period: DAY) { stepSummary { __typename } }`)),
+    ]);
+    return { probe: [`STEPFEED ${digest(a)}`, `PETRANKING ${digest(b)}`, `PETRANKING.args ${raw(c)}`, `LB.enum ${raw(d)}`, `LB.fields ${digest(e)}`, `STEPSUMMARY ${raw(f)}`].join("\n") };
   } catch (e) {
     return { probe: `ERR ${e?.message ?? e}` };
   }
