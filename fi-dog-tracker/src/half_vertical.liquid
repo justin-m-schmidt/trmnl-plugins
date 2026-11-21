@@ -1,0 +1,43 @@
+{% assign fi_view = view | default: trmnl.plugin_settings.custom_fields_values.view | default: "both" %}
+{% if error %}
+  {% render "fi_error", error: error %}
+{% elsif fi_view == "walk" %}
+<div class="layout layout--col layout--stretch-x layout--top" style="gap:10px;">
+  <div style="display:flex; flex-direction:column; align-items:center; gap:10px; width:100%;">
+    {% render "fi_ring", size: 254, state: walk.state, big: walk.big, sub: walk.sub, line1: walk.line1, line2: walk.line2, dash: walk.ring.dash %}
+    {% render "fi_status", state: walk.state, status: walk.status %}
+  </div>
+  <div class="divider"></div>
+  {% render "fi_strip", strip: walk.strip, axis: walk.axis %}
+</div>
+{% else %}
+<div class="layout layout--col layout--stretch-x layout--top gap--small">
+  <div class="grid grid--cols-2">
+    <div class="flex flex--col">
+      <span class="value value--base value--tnums">{{ today.steps_label }}</span>
+      <span class="label label--small">Steps today</span>
+    </div>
+    <div class="flex flex--col">
+      <span class="value value--base value--tnums">{{ today.sleep }}</span>
+      <span class="label label--small">{{ today.sleep_title | default: "Sleep" }} · +{{ today.nap }} naps</span>
+    </div>
+  </div>
+  <div class="progress-bar progress-bar--small">
+    <div class="content">
+      <span class="label label--small">{{ today.pct }}% of {{ today.goal_label }} goal</span>
+      <span class="value value--xxsmall">{{ today.distance }}</span>
+    </div>
+    <div class="track"><div class="fill" data-fi="activity" style="width: {{ today.bar_pct }}%"></div></div>
+  </div>
+  <span class="label label--small">Steps · 7 days (avg {{ week.avg_steps }})</span>
+  <div id="fi-steps-hv" class="w--full"></div>
+  <span class="label label--small">Sleep + naps (h) · avg {{ week.avg_sleep }}</span>
+  <div id="fi-sleep-hv" class="w--full"></div>
+</div>
+<script>
+  var fiDaysHV = {{ days | json }};
+  fiChart("fi-steps-hv", "steps", fiDaysHV, {{ today.goal | default: 0 }}, { height: 120, font: 12, narrow: true, ticks: 3 });
+  fiChart("fi-sleep-hv", "sleep", fiDaysHV, 0, { height: 120, font: 12, narrow: true, ticks: 3 });
+</script>
+{% endif %}
+{% render "fi_title_bar", view: fi_view, compact: true, pet: pet, walk: walk, updated: updated, demo: demo, sample: sample, error: error %}

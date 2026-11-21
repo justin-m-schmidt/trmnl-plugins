@@ -1,0 +1,204 @@
+{% assign fi_view = view | default: trmnl.plugin_settings.custom_fields_values.view | default: "both" %}
+<script>
+  // Colour e-ink: steps and walks in the Fi app's green, night sleep in its light purple and
+  // naps in its dark purple. Black-and-white and grayscale screens are left exactly as they
+  // are. Full-colour panels get Fi's own values; panels with a few inks get the nearest
+  // framework colour, which the framework snaps to an ink (or a dither of one).
+  // Mark an element with data-fi="activity|sleep|nap" to have it painted; an SVG shape names
+  // the attribute to set in data-fi-attr (default stroke). data-fi="key" swaps a legend's
+  // text for data-fi-color-text, because the light and dark roles differ on colour screens.
+  window.fiPaint = (function () {
+    var HEX = { activity: "#5ECB76", sleep: "#935EF7", nap: "#5B0FCB" };
+    var TOKEN = { activity: "green", sleep: "violet-55", nap: "violet-30" };
+    function kind(node) {
+      var screen = node && node.closest ? node.closest(".screen") : null;
+      var cls = screen ? String(screen.getAttribute("class") || "") : "";
+      if (/screen--color-full/.test(cls)) return "full";
+      return /screen--color-/.test(cls) ? "inks" : "mono";
+    }
+    function fill(role, node) {
+      var k = kind(node);
+      if (k === "mono" || !HEX[role]) return null;
+      if (k === "full") return { color: HEX[role], image: null };
+      try { return window.TRMNLPaint.bg(TOKEN[role], { el: node }); } catch (e) { return null; }
+    }
+    // A Highcharts colour (or pattern) for a chart series, or null to keep the default ink.
+    function chart(role, id) {
+      var node = document.getElementById(id);
+      var f = fill(role, node);
+      if (!f) return null;
+      if (!f.image) return f.color;
+      try { return window.TRMNLPaint.toHighcharts(f); } catch (e) { return f.color; }
+    }
+    function run() {
+      var nodes = document.querySelectorAll("[data-fi]");
+      for (var i = 0; i < nodes.length; i++) {
+        var node = nodes[i];
+        var role = node.getAttribute("data-fi");
+        if (role === "key") {
+          if (kind(node) !== "mono") node.textContent = node.getAttribute("data-fi-color-text");
+          continue;
+        }
+        var f = fill(role, node);
+        if (!f) continue;
+        if (node.namespaceURI === "http://www.w3.org/2000/svg") {
+          var color = f.color;
+          if (kind(node) === "inks") {
+            try { color = window.TRMNLPaint.stroke(TOKEN[role], { el: node }).color || color; } catch (e) {}
+          }
+          node.setAttribute(node.getAttribute("data-fi-attr") || "stroke", color);
+        } else if (f.image) {
+          try { window.TRMNLPaint.apply(node, f); } catch (e) { node.style.background = f.color; }
+        } else {
+          node.style.background = f.color;
+        }
+      }
+    }
+    var tries = 0;
+    function start() {
+      if (document.readyState === "loading" || !window.TRMNLPaint) {
+        if (++tries < 200) setTimeout(start, 50);
+        return;
+      }
+      try { run(); } catch (e) {}
+    }
+    return { chart: chart, kind: kind, start: start };
+  })();
+  fiPaint.start();
+</script>
+{% if fi_view != "walk" %}
+<script src="https://trmnl.com/js/highcharts/12.3.0/highcharts.js"></script>
+<script src="https://trmnl.com/js/highcharts/12.3.0/pattern-fill.js"></script>
+<script>
+  // 7-day charts shared by the steps and sleep layouts. kind "steps": columns with a dashed
+  // goal line; kind "sleep": night sleep stacked under naps, in hours.
+  window.fiChart = function (el, kind, days, goal, opts) {
+    opts = opts || {};
+    var tries = 0;
+    (function attempt() {
+      if (!(window.TRMNLCharts && window.Highcharts && document.getElementById(el))) {
+        if (++tries < 200) setTimeout(attempt, 50);
+        return;
+      }
+      TRMNLCharts.watch(el, function () {
+        var px = function (v) { return TRMNLPaint.px(v, { el: el }); };
+        var font = { fontSize: px(opts.font || 16) + "px", textOutline: "none", fontWeight: "normal" };
+        var k = function (v) { return v >= 1000 ? (v / 1000).toFixed(v >= 10000 ? 0 : 1).replace(/\.0$/, "") + "k" : String(v); };
+        var labels = opts.labels !== false;
+        var series = kind === "steps"
+          ? [{
+              name: "Steps",
+              data: days.map(function (d) { return d.steps; }),
+              color: fiPaint.chart("activity", el) || TRMNLCharts.series(0, 2, { el: el }),
+              dataLabels: { enabled: labels, allowOverlap: true, crop: false, overflow: "allow", formatter: function () { return k(this.y); }, style: font }
+            }]
+          : [
+              { name: "Nap", data: days.map(function (d) { return d.nap_h; }), color: fiPaint.chart("nap", el) || TRMNLCharts.series(1, 2, { el: el }) },
+              { name: "Sleep", data: days.map(function (d) { return d.sleep_h; }), color: fiPaint.chart("sleep", el) || TRMNLCharts.series(0, 2, { el: el }) }
+            ];
+        return Highcharts.chart(el, TRMNLCharts.merge(TRMNLCharts.options({ el: el }), {
+          chart: { type: "column", height: px(opts.height || 200), spacing: px([labels ? 18 : 4, 0, 0, 0]) },
+          legend: { enabled: false },
+          plotOptions: {
+            series: { animation: false, enableMouseTracking: false, borderWidth: 0, pointPadding: 0.08, groupPadding: 0.06 },
+            column: { stacking: kind === "sleep" ? "normal" : undefined }
+          },
+          series: series,
+          xAxis: {
+            categories: days.map(function (d) { return opts.narrow ? d.short : d.day; }),
+            lineWidth: 0,
+            tickLength: 0,
+            labels: { style: font, rotation: 0, autoRotation: false }
+          },
+          yAxis: {
+            title: { text: null },
+            tickAmount: opts.ticks || 4,
+            gridLineDashStyle: "shortdot",
+            softMax: kind === "steps" ? goal : undefined,
+            labels: {
+              enabled: opts.axis !== false,
+              style: font,
+              formatter: function () { return kind === "steps" ? k(this.value) : this.value + "h"; }
+            },
+            stackLabels: {
+              enabled: kind === "sleep" && labels,
+              style: font,
+              formatter: function () { return this.total.toFixed(1); }
+            },
+            plotLines: kind === "steps" && goal ? [{ value: goal, width: px(2), dashStyle: "Dash", color: "#000000", zIndex: 5 }] : []
+          }
+        }));
+      });
+    })();
+  };
+</script>
+{% endif %}
+
+{% comment %} Walk timer: the ring, one drawing per state. {% endcomment %}
+{% template fi_ring %}
+{% assign ink = "#000" %}
+<svg xmlns="http://www.w3.org/2000/svg" width="{{ size }}" height="{{ size }}" viewBox="0 0 230 230" style="flex:none;" font-family="Inter, Helvetica, Arial, sans-serif">
+  {% if state == "due" %}
+    {% assign ink = "#fff" %}
+    <circle cx="115" cy="115" r="107" fill="#000"></circle>
+  {% elsif state == "walking" %}
+    <circle data-fi="activity" cx="115" cy="115" r="100" fill="none" stroke="#000" stroke-width="14" stroke-dasharray="26 13.27"></circle>
+  {% elsif state == "morning" %}
+    <circle cx="115" cy="115" r="100" fill="none" stroke="#000" stroke-width="3" stroke-linecap="round" stroke-dasharray="3 9"></circle>
+  {% else %}
+    <circle cx="115" cy="115" r="100" fill="none" stroke="#000" stroke-width="2" stroke-dasharray="2 7"></circle>
+    <circle data-fi="activity" cx="115" cy="115" r="100" fill="none" stroke="#000" stroke-width="14" stroke-linecap="round" stroke-dasharray="{{ dash }}" transform="rotate(-90 115 115)"></circle>
+  {% endif %}
+  {% if state == "morning" %}
+    <g transform="translate(73 50) scale(1.75)" fill="none" stroke="#000" stroke-width="2.6" stroke-linecap="round"><path d="M10 26a14 14 0 0 1 28 0"></path><line x1="2" y1="26" x2="46" y2="26"></line><line x1="24" y1="2" x2="24" y2="7"></line><line x1="8" y1="9" x2="11.5" y2="12.5"></line><line x1="40" y1="9" x2="36.5" y2="12.5"></line><line x1="12" y1="31" x2="36" y2="31"></line></g>
+    <text x="115" y="142" text-anchor="middle" font-size="23" font-weight="600" fill="#000">{{ line1 }}</text>
+    <text x="115" y="168" text-anchor="middle" font-size="23" font-weight="600" fill="#000">{{ line2 }}</text>
+  {% else %}
+    <g transform="translate(95 42) scale(1.67)" fill="{{ ink }}"><ellipse cx="4.8" cy="10.2" rx="2.2" ry="2.8"></ellipse><ellipse cx="9.3" cy="5.4" rx="2.2" ry="2.8"></ellipse><ellipse cx="14.7" cy="5.4" rx="2.2" ry="2.8"></ellipse><ellipse cx="19.2" cy="10.2" rx="2.2" ry="2.8"></ellipse><path d="M12 11c-3.5 0-7 4.6-7 7.4 0 1.9 1.5 2.6 3 2.6 1.6 0 2.6-.8 4-.8s2.4.8 4 .8c1.5 0 3-.7 3-2.6C19 15.6 15.5 11 12 11z"></path></g>
+    <text x="115" y="138" text-anchor="middle" font-size="46" font-weight="600" fill="{{ ink }}">{{ big }}</text>
+    <text x="115" y="163" text-anchor="middle" font-size="15" fill="{{ ink }}">{{ sub }}</text>
+  {% endif %}
+</svg>
+{% endtemplate %}
+
+{% template fi_status %}
+{% if state == "due" %}
+<span class="label" style="font-weight:700; background:#000; color:#fff; padding:3px 12px; border-radius:6px;">{{ status }}</span>
+{% else %}
+<span class="label" style="font-weight:700;">{{ status }}</span>
+{% endif %}
+{% endtemplate %}
+
+{% comment %} Walk timer: today's walks on a 6am to 10pm strip. {% endcomment %}
+{% template fi_strip %}
+<div style="display:flex; justify-content:space-between; width:100%; align-items:baseline;">
+  <span class="label" style="font-weight:700;">Today's walks</span>
+  <span class="label label--small">{% if strip.known %}{{ strip.summary }}{% else %}History unavailable{% endif %}</span>
+</div>
+<div style="width:100%;">
+  <div style="position:relative; height:26px; border-bottom:2px solid #000;">
+    {% for b in strip.blocks %}<div {% unless b.live %}data-fi="activity" {% endunless %}style="position:absolute; bottom:0; left:{{ b.left }}%; width:{{ b.width }}%; min-width:6px; height:16px; box-sizing:border-box; {% if b.live %}border:2px solid #000; border-bottom:0; background:#fff;{% else %}background:#000;{% endif %}"></div>{% endfor %}
+    {% if strip.show_now %}<div style="position:absolute; bottom:0; left:{{ strip.now }}%; width:0; height:26px; border-left:2px dotted #000;"></div>{% endif %}
+  </div>
+  <div style="display:flex; justify-content:space-between; width:100%;">{% for a in axis %}<span class="label label--small">{{ a }}</span>{% endfor %}</div>
+</div>
+{% endtemplate %}
+
+{% comment %} One title bar for every screen. compact drops the time where the bar is narrow. {% endcomment %}
+{% template fi_title_bar %}
+<div class="title_bar">
+  <div class="image image-stroke image-stroke--large">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="#000000"><ellipse cx="4.8" cy="10.2" rx="2.2" ry="2.8"/><ellipse cx="9.3" cy="5.4" rx="2.2" ry="2.8"/><ellipse cx="14.7" cy="5.4" rx="2.2" ry="2.8"/><ellipse cx="19.2" cy="10.2" rx="2.2" ry="2.8"/><path d="M12 11c-3.5 0-7 4.6-7 7.4 0 1.9 1.5 2.6 3 2.6 1.6 0 2.6-.8 4-.8s2.4.8 4 .8c1.5 0 3-.7 3-2.6C19 15.6 15.5 11 12 11z"/></g></svg>
+  </div>
+  <span class="title">{{ pet.name | default: "Fi Dog Tracker" }}</span>
+  <span class="instance">{% if error %}Fi error{% elsif sample %}Sample data · add your Fi login{% elsif view == "walk" %}{% if demo %}Preview · {{ walk.label }}{% else %}{{ walk.label }}{% if walk.goal_note %} · {{ walk.goal_note }}{% endif %}{% unless compact %} · {{ updated }}{% endunless %}{% endif %}{% else %}{% if pet.status %}{{ pet.status }} · {% endif %}{% if pet.battery %}{{ pet.battery }}% battery · {% endif %}{{ updated }}{% endif %}</span>
+</div>
+{% endtemplate %}
+
+{% template fi_error %}
+<div class="layout layout--col layout--center gap--small">
+  <span class="title">Couldn't load Fi data</span>
+  <span class="description text--center">{{ error }}</span>
+  <span class="label label--small">{% if error contains "password" or error contains "sign-in" %}Check the Fi email and password in the plugin settings.{% else %}Will try again on the next refresh.{% endif %}</span>
+</div>
+{% endtemplate %}

@@ -1,0 +1,141 @@
+{% assign fi_view = view | default: trmnl.plugin_settings.custom_fields_values.view | default: "both" %}
+{% if error %}
+  {% render "fi_error", error: error %}
+{% elsif fi_view == "walk" %}
+<div class="layout layout--col layout--stretch-x">
+  <div style="display:flex; align-items:center; gap:40px; width:100%;">
+    {% render "fi_ring", size: 330, state: walk.state, big: walk.big, sub: walk.sub, line1: walk.line1, line2: walk.line2, dash: walk.ring.dash %}
+    <div style="flex:1; min-width:0; display:flex; flex-direction:column; align-items:flex-start; gap:14px;">
+      <span class="value value--small">{{ walk.label }}</span>
+      {% render "fi_status", state: walk.state, status: walk.status %}
+      <span class="label label--small">Walk due after {{ walk.limit }} without a walk</span>
+      <div class="divider"></div>
+      {% render "fi_strip", strip: walk.strip, axis: walk.axis %}
+    </div>
+  </div>
+</div>
+{% elsif fi_view == "today" %}
+<div class="layout layout--col layout--stretch-x gap--large">
+  <div class="grid grid--cols-2 gap--xlarge">
+    <div class="flex flex--col gap--small">
+      <span class="label">Steps today</span>
+      <span class="value value--xxlarge value--tnums">{{ today.steps_label }}</span>
+      <div class="progress-bar w--full">
+        <div class="content">
+          <span class="label label--small">{{ today.pct }}% of {{ today.goal_label }}</span>
+          <span class="value value--xxsmall">{% if today.to_go != "0" %}{{ today.to_go }} to go{% else %}Goal reached{% endif %}</span>
+        </div>
+        <div class="track"><div class="fill" data-fi="activity" style="width: {{ today.bar_pct }}%"></div></div>
+      </div>
+    </div>
+    <div class="flex flex--col gap--small">
+      <span class="label">{{ today.sleep_title | default: "Sleep today" }}</span>
+      <span class="value value--xxlarge value--tnums">{{ today.sleep }}</span>
+      <span class="label label--small">+ {{ today.nap }} naps · {{ today.rest }} rest</span>
+    </div>
+  </div>
+  <div class="divider"></div>
+  <div class="grid grid--cols-4">
+    <div class="item"><div class="meta"></div><div class="content">
+      <span class="value value--base value--tnums">{{ today.distance }}</span>
+      <span class="label label--small">Distance today</span>
+    </div></div>
+    <div class="item"><div class="meta"></div><div class="content">
+      <span class="value value--base value--tnums">{{ week.avg_steps }}</span>
+      <span class="label label--small">Avg steps, 7 days</span>
+    </div></div>
+    <div class="item"><div class="meta"></div><div class="content">
+      <span class="value value--base value--tnums">{{ week.avg_sleep }}</span>
+      <span class="label label--small">Avg sleep, 7 days</span>
+    </div></div>
+    <div class="item"><div class="meta"></div><div class="content">
+      <span class="value value--base value--tnums">{% if pet.battery %}{{ pet.battery }}%{% else %}–{% endif %}</span>
+      <span class="label label--small">Collar battery</span>
+    </div></div>
+  </div>
+</div>
+{% elsif fi_view == "week" %}
+<div class="layout layout--col layout--stretch-x layout--top gap--medium">
+  <div class="grid grid--cols-5">
+    <div class="item"><div class="meta"></div><div class="content">
+      <span class="value value--small value--tnums">{{ week.steps_label }}</span>
+      <span class="label label--small">Steps, 7 days</span>
+    </div></div>
+    <div class="item"><div class="meta"></div><div class="content">
+      <span class="value value--small value--tnums">{{ week.avg_steps }}</span>
+      <span class="label label--small">Avg per day</span>
+    </div></div>
+    <div class="item"><div class="meta"></div><div class="content">
+      <span class="value value--small value--tnums">{{ week.goal_days }}/{{ week.day_count }}</span>
+      <span class="label label--small">Goal days</span>
+    </div></div>
+    <div class="item"><div class="meta"></div><div class="content">
+      <span class="value value--small value--tnums">{{ week.avg_sleep }}</span>
+      <span class="label label--small">Avg sleep</span>
+    </div></div>
+    <div class="item"><div class="meta"></div><div class="content">
+      <span class="value value--small value--tnums">{{ week.avg_nap }}</span>
+      <span class="label label--small">Avg naps</span>
+    </div></div>
+  </div>
+  <div class="grid grid--cols-2 gap--large">
+    <div class="flex flex--col gap--xsmall">
+      <span class="label label--small">Steps per day · dashed line = goal</span>
+      <div id="fi-steps-full" class="w--full"></div>
+    </div>
+    <div class="flex flex--col gap--xsmall">
+      <span class="label label--small">Sleep per day (h) · <span data-fi="key" data-fi-color-text="light = night, dark = naps">dark = night, light = naps</span></span>
+      <div id="fi-sleep-full" class="w--full"></div>
+    </div>
+  </div>
+</div>
+<script>
+  var fiDays = {{ days | json }};
+  fiChart("fi-steps-full", "steps", fiDays, {{ today.goal | default: 0 }}, { height: 270, font: 14 });
+  fiChart("fi-sleep-full", "sleep", fiDays, 0, { height: 270, font: 14 });
+</script>
+{% else %}
+<div class="layout layout--col layout--stretch-x layout--top gap--medium">
+  <div class="grid grid--cols-4">
+    <div class="item"><div class="meta"></div><div class="content">
+      <span class="value value--base value--tnums">{{ today.steps_label }}</span>
+      <span class="label label--small">Steps today</span>
+    </div></div>
+    <div class="item"><div class="meta"></div><div class="content">
+      <span class="value value--base value--tnums">{{ today.sleep }}</span>
+      <span class="label label--small">{{ today.sleep_title | default: "Sleep today" }} · +{{ today.nap }} naps</span>
+    </div></div>
+    <div class="item"><div class="meta"></div><div class="content">
+      <span class="value value--base value--tnums">{{ week.avg_steps }}</span>
+      <span class="label label--small">Avg steps, 7 days</span>
+    </div></div>
+    <div class="item"><div class="meta"></div><div class="content">
+      <span class="value value--base value--tnums">{{ week.avg_sleep }}</span>
+      <span class="label label--small">Avg sleep, 7 days</span>
+    </div></div>
+  </div>
+  <div class="progress-bar">
+    <div class="content">
+      <span class="label label--small">Today: {{ today.pct }}% of {{ today.goal_label }} step goal · {{ today.distance }}</span>
+      <span class="value value--xxsmall">{% if today.to_go != "0" %}{{ today.to_go }} to go{% else %}Goal reached{% endif %}</span>
+    </div>
+    <div class="track"><div class="fill" data-fi="activity" style="width: {{ today.bar_pct }}%"></div></div>
+  </div>
+  <div class="grid grid--cols-2 gap--large">
+    <div class="flex flex--col gap--xsmall">
+      <span class="label label--small">Steps per day · dashed line = goal</span>
+      <div id="fi-steps-both" class="w--full"></div>
+    </div>
+    <div class="flex flex--col gap--xsmall">
+      <span class="label label--small">Sleep per day (h) · <span data-fi="key" data-fi-color-text="light = night, dark = naps">dark = night, light = naps</span></span>
+      <div id="fi-sleep-both" class="w--full"></div>
+    </div>
+  </div>
+</div>
+<script>
+  var fiDays = {{ days | json }};
+  fiChart("fi-steps-both", "steps", fiDays, {{ today.goal | default: 0 }}, { height: 210, font: 14 });
+  fiChart("fi-sleep-both", "sleep", fiDays, 0, { height: 210, font: 14 });
+</script>
+{% endif %}
+{% render "fi_title_bar", view: fi_view, pet: pet, walk: walk, updated: updated, demo: demo, sample: sample, error: error %}

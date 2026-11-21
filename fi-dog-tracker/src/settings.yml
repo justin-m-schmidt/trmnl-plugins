@@ -1,0 +1,104 @@
+---
+strategy: polling
+no_screen_padding: 'no'
+dark_mode: 'no'
+static_data: ''
+polling_verb: get
+framework_version: 3.4.3
+serverless_language: node
+refresh_interval_floor: ''
+polling_url: https://api.tryfi.com/
+polling_headers: ''
+polling_body: ''
+id: 511371
+oauth_enabled: 'false'
+oauth_pkce_enabled: 'no'
+custom_fields:
+- keyname: about
+  field_type: author_bio
+  name: About This Plugin
+  category: personal
+  description: 'Your dog''s day from the Fi collar. Pick one screen per plugin: an overview of steps and sleep, today only, the past week, or a walk timer that counts the time since the last walk and tells you when the next one is due. Add the plugin again to show more than one screen. Created by Justin.'
+- keyname: email
+  field_type: string
+  name: Fi email
+  description: The email you use to sign in to the Fi app.
+  placeholder: you@example.com
+- keyname: password
+  field_type: password
+  name: Fi password
+  description: Your Fi app password. Leave both blank to see sample data.
+- keyname: view
+  field_type: select
+  name: Screen
+  description: What this plugin shows. To show more than one, add the plugin again and pick another screen.
+  options:
+  - Overview - today and the past 7 days: both
+  - Today - steps, sleep and naps: today
+  - This week - 7-day charts: week
+  - Walk timer - time since the last walk: walk
+  default: both
+  conditional_validation:
+  - when: both
+    hidden:
+    - max_hours
+    - preview_state
+  - when: today
+    hidden:
+    - max_hours
+    - preview_state
+  - when: week
+    hidden:
+    - max_hours
+    - preview_state
+- keyname: max_hours
+  field_type: number
+  name: Hours between walks
+  description: Walk timer only. After this many hours without a walk, the screen switches to walk due. Decimals work, for example 3.5.
+  default: 4
+- keyname: preview_state
+  field_type: select
+  name: Preview a walk timer screen
+  description: Walk timer only. Shows one of its four screens with sample data. Set back to live data when done.
+  options:
+  - Live data: live
+  - Resting: resting
+  - Walk due: due
+  - On a walk: walking
+  - Good morning: morning
+  default: live
+  optional: true
+- keyname: units
+  field_type: select
+  name: Distance units
+  options:
+  - Miles: imperial
+  - Kilometers: metric
+  default: imperial
+- keyname: time_format
+  field_type: select
+  name: Time format
+  options:
+  - 12-hour: '12'
+  - 24-hour: '24'
+  default: '12'
+- keyname: multi_dog
+  field_type: select
+  name: Dogs on your Fi account
+  description: With one dog there is nothing to set. With several, choose that here and name the dog to show.
+  options:
+  - One dog: 'no'
+  - More than one: 'yes'
+  default: 'no'
+  conditional_validation:
+  - when: 'no'
+    hidden:
+    - pet_name
+- keyname: pet_name
+  field_type: string
+  name: Dog name
+  description: The name of the dog to show, as written in the Fi app.
+  optional: true
+name: Fi Dog Tracker
+description: Dog steps, sleep and walk timer
+refresh_interval: 30
