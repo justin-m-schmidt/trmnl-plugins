@@ -6,10 +6,10 @@ static_data: ''
 polling_verb: get
 framework_version: 3.1.1
 serverless_language: node
-refresh_interval_floor:
+refresh_interval_floor: ''
 polling_url: https://api.chess.com/pub/player/{{ username }}/stats
-polling_headers:
-polling_body:
+polling_headers: ''
+polling_body: ''
 id: 371719
 oauth_enabled: 'false'
 oauth_pkce_enabled: 'no'
@@ -26,5 +26,5 @@ custom_fields:
   description: Show stats from your chess.com profile. Created by Justin (github.com/justin-m-schmidt).
   github_url: https://github.com/justin-m-schmidt
 name: Chess.com
-description: Ratings, records and win rates
+description: Your chess.com stats at a glance
 refresh_interval: 15
