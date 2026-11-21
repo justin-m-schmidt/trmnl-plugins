@@ -2,7 +2,9 @@
 <style>
   /* Fi Homescreen style: the Fi app's home cards on its plain grey background. Solid greys on
      grayscale screens, the app's own colours on colour screens (fi-color), and black outlines on
-     1-bit screens (fi-1bit), which cannot show a solid grey without TRMNL's dither pattern. */
+     1-bit screens (fi-1bit), which cannot show a solid grey without TRMNL's dither pattern.
+     Each card is a size container: text and drawings are sized from the card (cqh/cqw), so the
+     cards fill whatever slot and screen they are on, from a TRMNL OG quadrant to a TRMNL X. */
   .view:has(.fi-home) { background: #DADADA; }
   .view:has(.fi-home.fi-color) { background: #F2F1EF; }
   .view:has(.fi-home.fi-1bit) { background: #FFFFFF; }
@@ -22,39 +24,60 @@
   .fi-1bit .fi-slider { border: 2px solid #000; box-sizing: border-box; }
   .fi-ol { display: none; }
   .fi-1bit .fi-ol { display: inline; }
-  .fi-card { background: var(--fi-card); border-radius: calc(var(--u) * 22px); position: relative; overflow: hidden;
-    padding: calc(var(--u) * 16px) calc(var(--u) * 24px); box-sizing: border-box; min-width: 0; min-height: 0; }
-  .fi-steps { flex: 1.12; display: flex; align-items: center; justify-content: space-between; gap: calc(var(--u) * 12px); }
-  .fi-steps-text { min-width: 0; }
+  .fi-card { container-type: size; background: var(--fi-card); border-radius: calc(var(--u) * 22px); position: relative; overflow: hidden;
+    box-sizing: border-box; min-width: 0; min-height: 0; }
+  .fi-in { position: absolute; inset: 0; padding: 7cqh max(5cqh, 3cqw); box-sizing: border-box; display: flex; flex-direction: column; }
   .fi-row { flex: 1; display: flex; gap: calc(var(--u) * 14px); min-height: 0; }
   .fi-row .fi-card { flex: 1; }
-  .fi-h { font-size: calc(var(--u) * 25px); font-weight: 500; line-height: 1.15; white-space: nowrap; }
-  .fi-big { font-size: calc(var(--u) * 50px); font-weight: 700; letter-spacing: -0.02em; line-height: 1.05; margin-top: calc(var(--u) * 2px); white-space: nowrap; }
-  .fi-row .fi-big { font-size: calc(var(--u) * 42px); }
-  .fi-big small { font-size: 0.5em; font-weight: 500; letter-spacing: 0; color: var(--fi-muted); margin-left: 0.2em; }
-  .fi-cap { font-family: "DejaVu Sans Mono", Menlo, "Courier New", monospace; font-size: calc(var(--u) * 14px); letter-spacing: 0.24em;
-    color: var(--fi-muted); margin-top: calc(var(--u) * 12px); text-transform: uppercase; white-space: nowrap; }
-  .fi-strain { display: flex; align-items: center; gap: calc(var(--u) * 10px); }
-  .fi-strain b { font-size: calc(var(--u) * 40px); font-weight: 500; color: var(--fi-muted); line-height: 1.1; }
-  .fi-slider { position: relative; width: calc(var(--u) * 150px); height: calc(var(--u) * 12px); border-radius: 99px;
+  .fi-chev { position: absolute; top: 8cqh; right: max(4cqh, 2.5cqw); width: min(6cqh, 4cqw); height: min(10cqh, 7cqw); }
+  /* Steps card: text, a column of figures and the goal donut, all in proportion to the card. */
+  .fi-steps { flex: 1.25; }
+  .fi-steps .fi-in { flex-direction: row; align-items: center; justify-content: space-between; gap: 4cqw; padding-right: 4cqw; }
+  .fi-steps-text { min-width: 0; display: flex; flex-direction: column; justify-content: center; }
+  .fi-steps .fi-h { font-size: min(12cqh, 7cqw); font-weight: 500; line-height: 1.1; white-space: nowrap; }
+  .fi-steps .fi-big { font-size: min(29cqh, 14cqw); font-weight: 700; letter-spacing: -0.02em; line-height: 1.05; white-space: nowrap; }
+  .fi-steps .fi-cap { font-size: min(6.5cqh, 3.6cqw); margin-top: 3cqh; }
+  .fi-strain { display: flex; align-items: center; gap: min(4cqh, 2cqw); }
+  .fi-strain b { font-size: min(19cqh, 10cqw); font-weight: 500; color: var(--fi-muted); line-height: 1.1; }
+  .fi-slider { position: relative; width: min(60cqh, 30cqw); height: min(5.5cqh, 3cqw); border-radius: 99px;
     background: linear-gradient(90deg, var(--fi-slider-a), var(--fi-slider-b)); }
-  .fi-knob { position: absolute; top: 50%; width: calc(var(--u) * 17px); height: calc(var(--u) * 17px); border-radius: 50%;
-    background: var(--fi-knob); border: calc(var(--u) * 3px) solid var(--fi-card); transform: translate(-50%, -50%); }
-  .fi-donut { width: calc(var(--u) * 178px); height: calc(var(--u) * 178px); flex: none; margin-right: calc(var(--u) * 22px); }
-  .fi-chev { position: absolute; top: calc(var(--u) * 20px); right: calc(var(--u) * 20px); width: calc(var(--u) * 11px); height: calc(var(--u) * 19px); }
-  .fi-art { position: absolute; left: 0; right: 0; bottom: 0; display: flex; justify-content: center; }
-  .fi-art svg { width: 66%; height: auto; display: block; }
-  .fi-home--hh { --u: 0.7; flex-direction: row; }
-  .fi-home--hh .fi-steps { flex: 1.55; }
+  .fi-knob { position: absolute; top: 50%; width: min(8cqh, 4.4cqw); height: min(8cqh, 4.4cqw); border-radius: 50%;
+    background: var(--fi-knob); border: min(1.4cqh, 0.8cqw) solid var(--fi-card); transform: translate(-50%, -50%); }
+  .fi-facts { flex: none; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 5cqh;
+    border-left: 2px solid var(--fi-track); padding-left: 4cqw; }
+  .fi-1bit .fi-facts { border-left-style: dotted; border-left-color: #000; }
+  .fi-fact { display: flex; flex-direction: column; }
+  .fi-fact .fi-cap { font-size: min(6cqh, 2.6cqw); margin: 0; }
+  .fi-fact b { font-size: min(13cqh, 4.6cqw); font-weight: 600; line-height: 1.1; white-space: nowrap; }
+  .fi-donut { height: min(86cqh, 34cqw); width: min(86cqh, 34cqw); flex: none; }
+  @container (max-aspect-ratio: 5/2) { .fi-facts { display: none; } .fi-donut { height: min(86cqh, 46cqw); width: min(86cqh, 46cqw); } }
+  /* Rest and goals cards. */
+  .fi-h { font-size: min(14cqh, 7cqw); font-weight: 500; line-height: 1.15; white-space: nowrap; }
+  .fi-big { font-size: min(27cqh, 12cqw); font-weight: 700; letter-spacing: -0.02em; line-height: 1.05; white-space: nowrap; }
+  .fi-big small { font-size: 0.5em; font-weight: 500; letter-spacing: 0; color: var(--fi-muted); margin-left: 0.2em; }
+  .fi-cap { font-family: "DejaVu Sans Mono", Menlo, "Courier New", monospace; font-size: min(7.5cqh, 3.4cqw); letter-spacing: 0.2em;
+    color: var(--fi-muted); margin-top: 4cqh; text-transform: uppercase; white-space: nowrap; display: flex; justify-content: space-between; gap: 1em; }
+  .fi-cap i { font-style: normal; }
+  .fi-art { position: absolute; left: 0; right: 0; bottom: 0; height: 40cqh; display: flex; justify-content: center; align-items: flex-end; }
+  .fi-art svg { height: 100%; max-width: 92%; width: auto; display: block; }
+  @container (max-height: 150px) { .fi-art { height: 30cqh; } }
+  /* Sizes: half horizontal sets the cards side by side; the quadrant keeps the numbers only. */
+  .fi-home--hh { flex-direction: row; }
+  .fi-home--hh .fi-steps { flex: 1.3; }
   .fi-home--hh .fi-row { flex: 2; }
-  .fi-home--hh .fi-donut { margin-right: 0; }
-  .fi-home--hh .fi-art svg { width: 84%; }
-  .fi-home--hv { --u: 0.78; }
-  .fi-home--hv .fi-donut { margin-right: 0; }
-  .fi-home--hv .fi-art svg { width: 92%; }
-  .fi-home--q { --u: 0.56; }
-  .fi-home--q .fi-donut { width: calc(var(--u) * 150px); height: calc(var(--u) * 150px); margin-right: 0; }
-  .fi-home--q .fi-art, .fi-home--q .fi-chev { display: none; }
+  .fi-home--q .fi-art, .fi-home--q .fi-chev, .fi-home--q .fi-cap i { display: none; }
+  /* Narrow cards (half vertical): stack the caption and let the numbers use the width. */
+  @container (max-aspect-ratio: 7/5) {
+    .fi-h { font-size: min(10cqh, 11cqw); }
+    .fi-cap { flex-direction: column; gap: 0.7em; font-size: min(5.5cqh, 5.6cqw); letter-spacing: 0.14em; }
+    .fi-big { font-size: min(19cqh, 19cqw); margin-top: 2cqh; }
+    .fi-art { height: 34cqh; }
+  }
+  @container (max-aspect-ratio: 1/1) {
+    .fi-big { font-size: min(17cqh, 22cqw); }
+    .fi-art { height: 44cqh; }
+  }
+  .fi-home--q .fi-facts { display: none; }
   /* Walk timer ring: sized from the layout (container query units), so it grows on TRMNL X. */
   .fi-cq { container-type: size; }
   .fi-ring { flex: none; display: block; }
@@ -104,9 +127,9 @@
       if (!f.image) return f.color;
       try { return window.TRMNLPaint.toHighcharts(f); } catch (e) { return f.color; }
     }
-    // The home cards are drawn for the TRMNL OG (800x480); scale them to the screen they are on,
-    // so they fill a TRMNL X in landscape and portrait.
-    var BASE_U = { full: 1, hh: 0.7, hv: 0.78, q: 0.56 };
+    // Card text and drawings size themselves from each card; this scales only the gaps and corner
+    // radii, drawn for the TRMNL OG (800x480), to the screen they are on.
+    var BASE_U = { full: 1, hh: 0.8, hv: 0.8, q: 0.6 };
     function scaleHome(home) {
       var screen = home.closest(".screen");
       if (!screen) return;
@@ -241,7 +264,7 @@
    Shapes with class fi-ol are the outlines drawn only on 1-bit screens. {% endcomment %}
 {% template fi_home %}
 <div class="fi-home fi-home--{{ size }}">
-  <div class="fi-card fi-steps">
+  <div class="fi-card fi-steps"><div class="fi-in">
     <div class="fi-steps-text">
       <div class="fi-h">Steps</div>
       <div class="fi-big">{{ today.steps_label }}</div>
@@ -249,6 +272,11 @@
       <div class="fi-cap">Strain:{{ strain.level }}</div>
       <div class="fi-strain"><b>{{ strain.score }}</b><div class="fi-slider"><div class="fi-knob" style="left:{{ strain.pct }}%"></div></div></div>
       {% endif %}
+    </div>
+    <div class="fi-facts">
+      <div class="fi-fact"><span class="fi-cap">Goal</span><b>{{ today.goal_label }}</b></div>
+      <div class="fi-fact"><span class="fi-cap">{% if today.to_go != "0" %}To go{% else %}Goal reached{% endif %}</span><b>{% if today.to_go != "0" %}{{ today.to_go }}{% else %}&#10003;{% endif %}</b></div>
+      <div class="fi-fact"><span class="fi-cap">Distance</span><b>{{ today.distance }}</b></div>
     </div>
     <svg class="fi-donut" viewBox="0 0 200 200">
       <circle cx="100" cy="100" r="80" fill="none" stroke-width="40" style="stroke:var(--fi-track)"></circle>
@@ -258,13 +286,13 @@
       <text x="100" y="101" text-anchor="middle" font-size="31" font-weight="600" font-family="Inter, Helvetica, Arial, sans-serif" style="fill:var(--fi-ring-text)">{{ today.pct }}%</text>
       <text x="100" y="128" text-anchor="middle" font-size="21" font-family="Inter, Helvetica, Arial, sans-serif" style="fill:var(--fi-muted)">of goal</text>
     </svg>
-    <svg class="fi-chev" viewBox="0 0 11 19"><path d="M2 2 L9 9.5 L2 17" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--fi-chev)"></path></svg>
-  </div>
+  </div></div>
   <div class="fi-row">
-    <div class="fi-card">
+    <div class="fi-card"><div class="fi-in">
       <div class="fi-h">Rest</div>
-      <div class="fi-cap">Naps today</div>
+      <div class="fi-cap"><span>Naps today</span><i>Night {{ today.sleep }}</i></div>
       <div class="fi-big">{{ today.nap }}</div>
+    </div>
       <svg class="fi-chev" viewBox="0 0 11 19"><path d="M2 2 L9 9.5 L2 17" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--fi-chev)"></path></svg>
       <div class="fi-art"><svg viewBox="0 0 420 100" preserveAspectRatio="xMidYMax meet">
         <g class="fi-ol" fill="#000" stroke="#000" stroke-width="8"><circle cx="300" cy="68" r="44"></circle><circle cx="362" cy="88" r="32"></circle><circle cx="250" cy="92" r="28"></circle><rect x="250" y="86" width="150" height="20"></rect></g>
@@ -273,10 +301,11 @@
         <g fill="none" stroke-width="5" stroke-linejoin="round" style="stroke:var(--fi-zz)"><path d="M338 30 h16 l-16 16 h16"></path><path d="M362 8 h22 l-22 24 h22"></path></g>
       </svg></div>
     </div>
-    <div class="fi-card">
+    <div class="fi-card"><div class="fi-in">
       <div class="fi-h">Goals</div>
-      <div class="fi-cap">This week</div>
+      <div class="fi-cap"><span>This week</span><i>Avg {{ week.avg_steps }}</i></div>
       <div class="fi-big">{{ week.goal_days }}/{{ week.day_count }}<small>days</small></div>
+    </div>
       <svg class="fi-chev" viewBox="0 0 11 19"><path d="M2 2 L9 9.5 L2 17" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--fi-chev)"></path></svg>
       <div class="fi-art"><svg viewBox="0 0 420 100" preserveAspectRatio="xMidYMax meet">
         <rect x="20" y="52" width="128" height="60" rx="8" style="fill:var(--fi-pod-side)"></rect>
