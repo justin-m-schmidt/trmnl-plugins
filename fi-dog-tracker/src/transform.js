@@ -18,26 +18,31 @@ async function gql(cookie, query) {
     try { return JSON.parse(text); } catch { return { status: res.status, text: text.slice(0, 300) }; }
   } catch (e) { return { fetchError: String(e?.message ?? e) }; }
 }
-const raw = (r) => (r?.errors ? r.errors.map((e) => e.message).join(" / ") : JSON.stringify(r)).slice(0, 700);
+const CAND = "id title name label type rank score region regionName state stateName area areaName location place trend change delta previousRank rankChange direction pet pets entries leaderboard leaderboards myRank petRank myPetRank currentPetRank petRanks ranks cards sections items stats window period week start end description subtitle value count total percentile".split(" ");
+function digest(r) {
+  if (!r?.errors) return JSON.stringify(r).slice(0, 1500);
+  const bad = {};
+  const notes = [];
+  for (const e of r.errors) {
+    const m = /Cannot query field "(\w+)" on type "(\w+)"\.(.*)/.exec(e.message);
+    if (m) { (bad[m[2]] ??= new Set()).add(m[1]); if (m[3].trim()) notes.push(`${m[2]}.${m[1]}:${m[3].trim()}`); }
+    else notes.push(e.message);
+  }
+  const valid = Object.entries(bad).map(([t, s]) => `${t} VALID[${CAND.filter((c) => !s.has(c)).join(",")}]`);
+  return `${valid.join(" ; ")} NOTES[${notes.join(" / ")}]`.slice(0, 3000);
+}
+const raw = (r) => (r?.errors ? r.errors.map((e) => e.message).join(" / ") : JSON.stringify(r)).slice(0, 900);
 async function run(input) {
   try {
     const cookie = await login(setting(input, "email"), setting(input, "password"));
-    const u = await gql(cookie, `{ currentUser { userHouseholds { household { pets { id name } } } } }`);
-    const id = u?.data?.currentUser?.userHouseholds?.[0]?.household?.pets?.[0]?.id;
-    if (!id) return { probe: JSON.stringify(u).slice(0, 800) };
-    const p = (b) => `{ pet(id: "${id}") { ${b} } }`;
-    const petGuesses = ["standing", "standings", "regionRank", "petRank", "weeklyRank", "leaderboardStats", "ranks", "rankingInfo", "leaderboardPosition", "stats", "homeRank", "rankCard", "leaderboardEntry", "leaderboardRanking", "ranked", "petRanking", "packFeed", "weekInReview"];
-    const rootGuesses = ["petRankings", "petLeaderboard", "stateLeaderboard", "regionalLeaderboard", "leaderboardForPet", "rankingForPet", "petRank", "currentRanking", "homeScreen", "home", "petHome"];
-    const jobs = [
-      ...petGuesses.map((g) => [`pet.${g}`, p(g)]),
-      ...rootGuesses.map((g) => [`root.${g}`, `{ ${g} }`]),
-      ["lb.weekly", `{ leaderboard(window: WEEKLY) { window entries { rank petId score } stats { averageScore } week { start end } } }`],
-      ["lb.today", `{ leaderboard(window: TODAY) { window entries { rank petId score } } }`],
-      ["rank.today", `{ petRanking(petId: "${id}", window: TODAY) { rank score } }`],
-      ["strain", p(`stepFeed(period: DAY) { stepSummary { title strainScore strainLevel totalSteps stepGoal } }`)],
-    ];
-    const out = await Promise.all(jobs.map(async ([k, q]) => `${k} => ${raw(await gql(cookie, q))}`));
-    return { probe: out.join("\n").slice(0, 9500) };
+    const [a, b, c, d, e] = await Promise.all([
+      gql(cookie, `{ leaderboardsHome { ${CAND.join(" ")} } }`),
+      gql(cookie, `{ leaderboardsHome(zzz: 1) { __typename } }`),
+      gql(cookie, `{ leaderboard(window: WEEKLY) { entries { rank score pet { id name } } } }`),
+      gql(cookie, `{ leaderboardDirectory { ${CAND.join(" ")} } }`),
+      gql(cookie, `{ leaderboardsHome { __typename } }`),
+    ]);
+    return { probe: [`HOME ${digest(a)}`, `HOME.args ${raw(b)}`, `LB ${raw(c)}`, `DIR ${digest(d)}`, `HOME.type ${raw(e)}`].join("\n").slice(0, 9500) };
   } catch (e) {
     return { probe: `ERR ${e?.message ?? e}` };
   }
