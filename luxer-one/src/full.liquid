@@ -1,0 +1,34 @@
+{% if state == "auth" or state == "error" %}
+  {% render "lx_message", state: state, step: step, email: email, field: field, error: error %}
+{% elsif count == 0 %}
+<div class="layout layout--col layout--center" style="gap:14px;">
+  {% render "lx_locker", size: 210 %}
+  <span class="value value--large">All picked up</span>
+  <span class="label">No packages waiting in your {% if multi %}lockers{% else %}locker{% endif %}</span>
+  {% if picked_total and picked_total > 0 %}<span class="label" style="border:2px solid #000; border-radius:999px; padding:3px 16px;"><span style="font-weight:700;">{{ picked_total }}{% if picked_more %}+{% endif %}</span> picked up so far</span>{% endif %}
+  {% if notice and notice != "" %}{% render "lx_people", people: people %}{% endif %}
+</div>
+{% else %}
+<div class="layout layout--col layout--stretch-x">
+  <div style="display:flex; align-items:center; gap:36px; width:100%;">
+    <div style="flex:none; width:310px; display:flex; flex-direction:column; align-items:center; gap:10px;">
+      <div style="display:flex; align-items:center; gap:14px;">
+        {% render "lx_package", size: 150 %}
+        <span class="value value--xxxlarge">{{ count }}</span>
+      </div>
+      <span class="label" style="font-weight:700;">{{ noun | capitalize }} to pick up</span>
+      {% if multi %}{% render "lx_people", people: people %}{% endif %}
+    </div>
+    <div style="flex:1; min-width:0; border-left:2px solid #000; padding-left:28px; display:flex; flex-direction:column; gap:12px;">
+      {% if pickup_url and pickup_url != "" %}
+      {% render "lx_list", packages: packages, count: count, rows: 3, big: true, pad: 8 %}
+      {% render "lx_qr", url: pickup_url, size: pickup_qr %}
+      {% else %}
+      {% render "lx_list", packages: packages, count: count, rows: 4, big: true, pad: 11 %}
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endif %}
+{% render "lx_title_bar", state: state, sample: sample, demo: demo, updated: updated, notice: notice %}
+{% if hide %}<script>window.TRMNL_SKIP_DISPLAY = true;</script>{% endif %}

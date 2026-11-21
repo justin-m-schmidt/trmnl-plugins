@@ -1,0 +1,174 @@
+---
+strategy: polling
+no_screen_padding: 'no'
+dark_mode: 'no'
+static_data: ''
+polling_verb: get
+framework_version: 3.4.3
+serverless_language: node
+refresh_interval_floor: ''
+polling_url: https://trmnl.com/custom_plugin_example_data.json
+polling_headers: ''
+polling_body: ''
+id: 546434
+oauth_enabled: 'false'
+oauth_pkce_enabled: 'no'
+custom_fields:
+- keyname: about
+  field_type: author_bio
+  name: About This Plugin
+  category: personal
+  description: Shows how many packages are waiting in your Luxer One locker, with the carrier and locker of each on larger layouts, and an empty open locker once everything is picked up. Add up to five accounts to combine a household, with a total, a subtotal per person and a name on each package. Unofficial, not affiliated with Luxer One. Created by Justin.
+- keyname: email
+  field_type: string
+  name: Luxer One email
+  description: The email you use in the Luxer One app. Save, and Luxer One emails you a sign-in code. Leave blank to see sample data.
+  placeholder: you@example.com
+  optional: true
+- keyname: code
+  field_type: string
+  name: Verification code
+  description: The code Luxer One emailed you. Enter it once and save; you stay signed in afterwards. No email? Enter 0 and save to get a new code.
+  placeholder: '123456'
+  optional: true
+- keyname: nickname
+  field_type: string
+  name: Nickname
+  description: The name shown on your packages and subtotal. Leave blank to use the first part of your email.
+  placeholder: Alex
+  maxlength: 14
+  optional: true
+- keyname: email_2
+  field_type: string
+  name: Add another person
+  description: Optional. A second Luxer One email to combine on this screen, for example your partner's. Typing it here opens their code and nickname fields.
+  help_text: To remove a person later, clear their email. People listed after an empty email are ignored, so move them up.
+  placeholder: partner@example.com
+  optional: true
+  conditional_validation:
+  - when: ''
+    hidden:
+    - nickname
+    - code_2
+    - nickname_2
+    - email_3
+- keyname: code_2
+  field_type: string
+  name: Person 2 verification code
+  description: The code Luxer One emails to the second address after you save. Enter 0 and save to get a new one.
+  placeholder: '123456'
+  optional: true
+- keyname: nickname_2
+  field_type: string
+  name: Person 2 nickname
+  placeholder: Sam
+  maxlength: 14
+  optional: true
+- keyname: email_3
+  field_type: string
+  name: Add a third person
+  description: Optional. A third Luxer One email.
+  placeholder: roommate@example.com
+  optional: true
+  conditional_validation:
+  - when: ''
+    hidden:
+    - code_3
+    - nickname_3
+    - email_4
+- keyname: code_3
+  field_type: string
+  name: Person 3 verification code
+  description: The code Luxer One emails to the third address after you save. Enter 0 and save to get a new one.
+  placeholder: '123456'
+  optional: true
+- keyname: nickname_3
+  field_type: string
+  name: Person 3 nickname
+  placeholder: Jo
+  maxlength: 14
+  optional: true
+- keyname: email_4
+  field_type: string
+  name: Add a fourth person
+  description: Optional. A fourth Luxer One email.
+  placeholder: name@example.com
+  optional: true
+  conditional_validation:
+  - when: ''
+    hidden:
+    - code_4
+    - nickname_4
+    - email_5
+- keyname: code_4
+  field_type: string
+  name: Person 4 verification code
+  description: The code Luxer One emails to the fourth address after you save. Enter 0 and save to get a new one.
+  placeholder: '123456'
+  optional: true
+- keyname: nickname_4
+  field_type: string
+  name: Person 4 nickname
+  placeholder: Max
+  maxlength: 14
+  optional: true
+- keyname: email_5
+  field_type: string
+  name: Add a fifth person
+  description: Optional. A fifth Luxer One email.
+  placeholder: name@example.com
+  optional: true
+  conditional_validation:
+  - when: ''
+    hidden:
+    - code_5
+    - nickname_5
+- keyname: code_5
+  field_type: string
+  name: Person 5 verification code
+  description: The code Luxer One emails to the fifth address after you save. Enter 0 and save to get a new one.
+  placeholder: '123456'
+  optional: true
+- keyname: nickname_5
+  field_type: string
+  name: Person 5 nickname
+  placeholder: Kim
+  maxlength: 14
+  optional: true
+- keyname: show_codes
+  field_type: select
+  name: Show locker access codes
+  description: Shows each package's pickup code next to it. Leave off if visitors can see the screen.
+  options:
+  - 'No': 'no'
+  - 'Yes': 'yes'
+  default: 'no'
+- keyname: phone_qr
+  field_type: select
+  name: QR code for your phone
+  description: Adds a QR code to the screen. Scanning it opens a page on your phone with each package's access code and locker QR. Anyone who can scan the screen gets the codes.
+  options:
+  - 'No': 'no'
+  - 'Yes': 'yes'
+  default: 'no'
+- keyname: hide_when_idle
+  field_type: select
+  name: Hide when nothing is waiting
+  description: Leaves this screen out of your playlist once the lockers have been empty for a full day. It comes back by itself when a package arrives. Sign-in and error screens always show.
+  options:
+  - 'No': 'no'
+  - 'Yes': 'yes'
+  default: 'no'
+- keyname: preview_state
+  field_type: select
+  name: Preview a screen
+  description: Shows a screen with sample data. Set back to live data when done.
+  options:
+  - Live data: live
+  - Packages waiting: packages
+  - Packages waiting, two people: duo
+  - All picked up: empty
+  default: live
+name: Luxer One
+description: Packages waiting in your locker
+refresh_interval: 15
