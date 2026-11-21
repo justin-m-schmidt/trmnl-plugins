@@ -1,9 +1,11 @@
 {% assign fi_view = view | default: trmnl.plugin_settings.custom_fields_values.view | default: "home" %}
 <style>
-  /* Fi Homescreen style: the Fi app's home cards on its plain grey background. Greys on
-     black-and-white screens, the app's own colours once fiPaint marks a colour screen. */
+  /* Fi Homescreen style: the Fi app's home cards on its plain grey background. Solid greys on
+     grayscale screens, the app's own colours on colour screens (fi-color), and black outlines on
+     1-bit screens (fi-1bit), which cannot show a solid grey without TRMNL's dither pattern. */
   .view:has(.fi-home) { background: #DADADA; }
   .view:has(.fi-home.fi-color) { background: #F2F1EF; }
+  .view:has(.fi-home.fi-1bit) { background: #FFFFFF; }
   .view:has(.fi-home) .title_bar { background: transparent !important; background-image: none !important; }
   .fi-home-layout { display: flex; flex-direction: column; align-items: stretch; justify-content: stretch; }
   .fi-home { --u: 1; --fi-card: #FFFFFF; --fi-ink: #000; --fi-muted: #555; --fi-track: #D2D2D2; --fi-ring: #000; --fi-ring-text: #000;
@@ -14,6 +16,12 @@
   .fi-home.fi-color { --fi-ink: #222; --fi-muted: #8E8782; --fi-track: #D2F0DE; --fi-ring: #5ECB76; --fi-ring-text: #3E9F5A;
     --fi-slider-a: #E7E4E1; --fi-slider-b: #B8B3AE; --fi-knob: #BDB8B3; --fi-cloud-a: #C4A8F6; --fi-cloud-b: #F1ECFC; --fi-zz: #E9E0FB;
     --fi-pod-side: #F7DA9C; --fi-pod-mid: #F0A73F; --fi-trophy: #F4D48C; --fi-chev: #AAA39E; }
+  .fi-home.fi-1bit { --fi-muted: #000; --fi-track: #FFF; --fi-slider-a: #FFF; --fi-slider-b: #FFF; --fi-knob: #000;
+    --fi-cloud-a: #000; --fi-cloud-b: #FFF; --fi-zz: #000; --fi-pod-side: #FFF; --fi-pod-mid: #000; --fi-trophy: #000; --fi-chev: #000; }
+  .fi-1bit .fi-card { border: 2px solid #000; }
+  .fi-1bit .fi-slider { border: 2px solid #000; box-sizing: border-box; }
+  .fi-ol { display: none; }
+  .fi-1bit .fi-ol { display: inline; }
   .fi-card { background: var(--fi-card); border-radius: calc(var(--u) * 22px); position: relative; overflow: hidden;
     padding: calc(var(--u) * 16px) calc(var(--u) * 24px); box-sizing: border-box; min-width: 0; min-height: 0; }
   .fi-steps { flex: 1.12; display: flex; align-items: center; justify-content: space-between; gap: calc(var(--u) * 12px); }
@@ -55,13 +63,16 @@
   // Mark an element with data-fi="activity|sleep|nap" to have it painted; an SVG shape names
   // the attribute to set in data-fi-attr (default stroke). data-fi="key" swaps a legend's
   // text for data-fi-color-text, because the light and dark roles differ on colour screens.
-  // The home screen carries its own palette in CSS; it only needs the fi-color class.
+  // The home screen carries its own palettes in CSS; it only needs a class naming the screen.
   window.fiPaint = (function () {
     var HEX = { activity: "#5ECB76", sleep: "#935EF7", nap: "#5B0FCB" };
     var TOKEN = { activity: "green", sleep: "violet-55", nap: "violet-30" };
-    function kind(node) {
+    function screenClass(node) {
       var screen = node && node.closest ? node.closest(".screen") : null;
-      var cls = screen ? String(screen.getAttribute("class") || "") : "";
+      return screen ? String(screen.getAttribute("class") || "") : "";
+    }
+    function kind(node) {
+      var cls = screenClass(node);
       if (/screen--color-full/.test(cls)) return "full";
       return /screen--color-/.test(cls) ? "inks" : "mono";
     }
@@ -79,9 +90,14 @@
       if (!f.image) return f.color;
       try { return window.TRMNLPaint.toHighcharts(f); } catch (e) { return f.color; }
     }
+    // Colour screens get the app's palette, 2- and 4-bit screens keep the solid greys, and
+    // anything else is treated as 1-bit, where only outlines survive.
     function markHome() {
       var homes = document.querySelectorAll(".fi-home");
-      for (var i = 0; i < homes.length; i++) if (kind(homes[i]) !== "mono") homes[i].classList.add("fi-color");
+      for (var i = 0; i < homes.length; i++) {
+        if (kind(homes[i]) !== "mono") homes[i].classList.add("fi-color");
+        else if (!/screen--(2bit|4bit)/.test(screenClass(homes[i]))) homes[i].classList.add("fi-1bit");
+      }
     }
     function run() {
       var nodes = document.querySelectorAll("[data-fi]");
@@ -193,7 +209,8 @@
 {% endif %}
 
 {% comment %} Fi Homescreen style: the app's Steps, Rest and rank cards. Fi does not share the
-   rank with this sign-in, so the third card shows this week's step-goal days on the podium. {% endcomment %}
+   rank with this sign-in, so the third card shows this week's step-goal days on the podium.
+   Shapes with class fi-ol are the outlines drawn only on 1-bit screens. {% endcomment %}
 {% template fi_home %}
 <div class="fi-home fi-home--{{ size }}">
   <div class="fi-card fi-steps">
@@ -207,6 +224,8 @@
     </div>
     <svg class="fi-donut" viewBox="0 0 200 200">
       <circle cx="100" cy="100" r="80" fill="none" stroke-width="40" style="stroke:var(--fi-track)"></circle>
+      <circle class="fi-ol" cx="100" cy="100" r="99" fill="none" stroke="#000" stroke-width="2"></circle>
+      <circle class="fi-ol" cx="100" cy="100" r="61" fill="none" stroke="#000" stroke-width="2"></circle>
       <circle cx="100" cy="100" r="80" fill="none" stroke-width="40" stroke-linecap="round" stroke-dasharray="{{ today.ring_dash }}" transform="rotate(-90 100 100)" style="stroke:var(--fi-ring)"></circle>
       <text x="100" y="101" text-anchor="middle" font-size="31" font-weight="600" font-family="Inter, Helvetica, Arial, sans-serif" style="fill:var(--fi-ring-text)">{{ today.pct }}%</text>
       <text x="100" y="128" text-anchor="middle" font-size="21" font-family="Inter, Helvetica, Arial, sans-serif" style="fill:var(--fi-muted)">of goal</text>
@@ -220,6 +239,7 @@
       <div class="fi-big">{{ today.nap }}</div>
       <svg class="fi-chev" viewBox="0 0 11 19"><path d="M2 2 L9 9.5 L2 17" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--fi-chev)"></path></svg>
       <div class="fi-art"><svg viewBox="0 0 420 100" preserveAspectRatio="xMidYMax meet">
+        <g class="fi-ol" fill="#000" stroke="#000" stroke-width="8"><circle cx="300" cy="68" r="44"></circle><circle cx="362" cy="88" r="32"></circle><circle cx="250" cy="92" r="28"></circle><rect x="250" y="86" width="150" height="20"></rect></g>
         <g style="fill:var(--fi-cloud-b)"><circle cx="300" cy="68" r="44"></circle><circle cx="362" cy="88" r="32"></circle><circle cx="250" cy="92" r="28"></circle><rect x="250" y="86" width="150" height="20"></rect></g>
         <g style="fill:var(--fi-cloud-a)"><circle cx="150" cy="58" r="50"></circle><circle cx="82" cy="90" r="38"></circle><circle cx="220" cy="90" r="38"></circle><rect x="82" y="86" width="138" height="20"></rect></g>
         <g fill="none" stroke-width="5" stroke-linejoin="round" style="stroke:var(--fi-zz)"><path d="M338 30 h16 l-16 16 h16"></path><path d="M362 8 h22 l-22 24 h22"></path></g>
@@ -233,6 +253,8 @@
       <div class="fi-art"><svg viewBox="0 0 420 100" preserveAspectRatio="xMidYMax meet">
         <rect x="20" y="52" width="128" height="60" rx="8" style="fill:var(--fi-pod-side)"></rect>
         <rect x="272" y="52" width="128" height="60" rx="8" style="fill:var(--fi-pod-side)"></rect>
+        <rect class="fi-ol" x="20" y="52" width="128" height="60" rx="8" fill="none" stroke="#000" stroke-width="6"></rect>
+        <rect class="fi-ol" x="272" y="52" width="128" height="60" rx="8" fill="none" stroke="#000" stroke-width="6"></rect>
         <rect x="146" y="14" width="128" height="98" rx="8" style="fill:var(--fi-pod-mid)"></rect>
         <g style="fill:var(--fi-trophy);stroke:var(--fi-trophy)"><path d="M320 0 h32 v4 q0 18 -16 22 q-16 -4 -16 -22 z" stroke="none"></path><path d="M320 4 h-7 q0 12 10 13 M352 4 h7 q0 12 -10 13" fill="none" stroke-width="4"></path><rect x="333" y="25" width="6" height="12" stroke="none"></rect><rect x="324" y="36" width="24" height="10" rx="2" stroke="none"></rect></g>
       </svg></div>
