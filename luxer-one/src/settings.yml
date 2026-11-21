@@ -19,6 +19,7 @@ custom_fields:
   name: About This Plugin
   category: personal
   description: Shows how many packages are waiting in your Luxer One locker, with the carrier and locker of each on larger layouts, and an empty open locker once everything is picked up. Add up to five accounts to combine a household, with a total, a subtotal per person and a name on each package. Unofficial, not affiliated with Luxer One. Created by Justin.
+  github_url: https://github.com/justin-m-schmidt/trmnl-plugins
 - keyname: email
   field_type: string
   name: Luxer One email
@@ -136,29 +137,20 @@ custom_fields:
   maxlength: 14
   optional: true
 - keyname: show_codes
-  field_type: select
+  field_type: boolean
   name: Show locker access codes
   description: Shows each package's pickup code next to it. Leave off if visitors can see the screen.
-  options:
-  - 'No': 'no'
-  - 'Yes': 'yes'
-  default: 'no'
+  default: false
 - keyname: phone_qr
-  field_type: select
+  field_type: boolean
   name: QR code for your phone
   description: Adds a QR code to the screen. Scanning it opens a page on your phone with each package's access code and locker QR. Anyone who can scan the screen gets the codes.
-  options:
-  - 'No': 'no'
-  - 'Yes': 'yes'
-  default: 'no'
+  default: false
 - keyname: hide_when_idle
-  field_type: select
+  field_type: boolean
   name: Hide when nothing is waiting
   description: Leaves this screen out of your playlist once the lockers have been empty for a full day. It comes back by itself when a package arrives. Sign-in and error screens always show.
-  options:
-  - 'No': 'no'
-  - 'Yes': 'yes'
-  default: 'no'
+  default: false
 - keyname: preview_state
   field_type: select
   name: Preview a screen

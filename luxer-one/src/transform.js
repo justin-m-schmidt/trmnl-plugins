@@ -20,6 +20,12 @@ function setting(input, key) {
   return typeof value === "string" ? value.trim() : value;
 }
 
+// Switches are boolean fields now; installs made before that saved "yes" / "no".
+function on(input, key) {
+  const v = setting(input, key);
+  return v === true || v === "true" || v === "yes" || v === "1";
+}
+
 async function api(method, path, token, body) {
   const headers = { accept: "application/json", "content-type": "application/json" };
   if (token) headers.authorization = `LuxerOneApi ${token}`;
@@ -328,7 +334,7 @@ const SAMPLE = (now) => [
 async function run(input) {
   const tz = validTz(input?.trmnl?.user?.time_zone_iana || "America/New_York");
   const now = Date.now();
-  const o = { tz, now, codes: setting(input, "show_codes") === "yes", page: setting(input, "phone_qr") === "yes" ? pageBase(PICKUP_PAGE) : "" };
+  const o = { tz, now, codes: on(input, "show_codes"), page: on(input, "phone_qr") ? pageBase(PICKUP_PAGE) : "" };
   const base = { updated: clock(now, tz, true) };
   const accounts = accountsFrom(input);
   const preview = String(setting(input, "preview_state") || "live");
@@ -379,7 +385,7 @@ async function run(input) {
     if (shaped.count > 0) delete trmnl_state.empty_since;
     else {
       if (!trmnl_state.empty_since) trmnl_state.empty_since = now;
-      hide = setting(input, "hide_when_idle") === "yes" && now - trmnl_state.empty_since >= IDLE_HIDE_MS;
+      hide = on(input, "hide_when_idle") && now - trmnl_state.empty_since >= IDLE_HIDE_MS;
     }
   }
   return {
