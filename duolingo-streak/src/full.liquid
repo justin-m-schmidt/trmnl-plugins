@@ -1,0 +1,14 @@
+<div class="layout">
+  <div class="ds ds--full {{ ds_cls }}">
+    <div class="ds-in">
+      {% if ds_big %}
+      <div class="ds-center">{{ ds_hero }}<div class="ds-row"><div class="ds-lab">day streak</div>{{ ds_pill }}</div>{{ ds_sub }}</div>
+      {% elsif ds_detail == "detailed" %}
+      <div class="ds-split"><div class="ds-left"><div class="ds-top">{{ ds_hero_l }}{{ ds_pill }}{{ ds_sub }}</div>{{ ds_ms }}</div>{{ ds_cal }}</div>
+      {% else %}
+      <div class="ds-rowa">{{ ds_hero_l }}<div class="ds-right">{{ ds_pill }}{{ ds_sub }}</div></div>{{ ds_ms }}{{ ds_week }}
+      {% endif %}
+    </div>
+  </div>
+</div>
+{{ ds_bar }}

@@ -1,0 +1,83 @@
+---
+strategy: polling
+no_screen_padding: 'no'
+dark_mode: 'no'
+static_data: ''
+polling_verb: get
+framework_version: 2.3.7
+serverless_language: ''
+refresh_interval_floor: ''
+polling_url: https://duolingoworker.justin-schmidt-ae6.workers.dev/?username={{ username }}
+polling_headers: ''
+polling_body: ''
+id: 57294
+oauth_enabled: 'false'
+oauth_pkce_enabled: 'no'
+custom_fields:
+- keyname: username
+  field_type: string
+  name: Username
+  description: Your Duolingo username (can be found on the website)
+  placeholder: JustinSchmidt
+- keyname: detail
+  field_type: select
+  name: Detail level
+  description: How much the screen shows
+  help_text: Minimal is the streak and today's status. Standard adds the week and the next milestone. Detailed swaps the week for a month calendar.
+  options:
+  - Minimal: minimal
+  - Standard: standard
+  - Detailed: detailed
+  default: standard
+- keyname: hide
+  field_type: select
+  multiple: true
+  optional: true
+  name: Hide
+  description: Leave out single elements
+  options:
+  - Hours left today: hours
+  - Week strip: week
+  - Next milestone: milestone
+  - Username in title bar: username
+  - Colour on colour screens: color
+- keyname: week_mode
+  field_type: select
+  name: Week strip
+  description: Which seven days the week strip covers
+  options:
+  - Sunday to Saturday: sunday
+  - Monday to Sunday: monday
+  - Last 7 days: last7
+  default: sunday
+- keyname: milestone_mode
+  field_type: select
+  name: Milestone
+  description: What the progress bar counts towards
+  options:
+  - Duolingo milestones: duolingo
+  - My own goal: goal
+  default: duolingo
+  conditional_validation:
+  - when: goal
+    visible:
+    - goal
+- keyname: goal
+  field_type: number
+  optional: true
+  name: My own goal
+  description: Streak length to aim for
+  placeholder: '300'
+  min: 1
+- keyname: reminder
+  field_type: select
+  name: When a lesson is still due
+  description: How strongly the screen reminds you
+  options:
+  - Gentle (outlined status pill): none
+  - Standard (black status pill): pill
+  - Strong (whole screen inverts after 6 pm): invert
+  default: pill
+name: Duolingo Streak
+description: Streak, today, week and milestone
+refresh_interval: 15
