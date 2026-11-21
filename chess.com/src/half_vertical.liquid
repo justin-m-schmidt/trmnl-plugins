@@ -1,93 +1,88 @@
 <div class="layout layout--col gap--space-between">
-
   <!-- Top: 2x2 rating grid -->
   <div class="grid grid--cols-2">
     <div class="item">
       <div class="meta"></div>
       <div class="content">
-        <span class="value value--xlarge value--tnums" data-fit-value="true">{{ fide }}</span>
-        <span class="label label--small">FIDE</span>
+        <span class="value value--xlarge lg:value--xxlarge value--tnums" data-fit-value="true">{{ fide }}</span>
+        <span class="label label--small lg:label--base">FIDE</span>
       </div>
     </div>
     <div class="item">
       <div class="meta"></div>
       <div class="content">
-        <span class="value value--xlarge value--tnums" data-fit-value="true">{{ chess_bullet.best.rating }}</span>
-        <span class="label label--small">Bullet</span>
+        <span class="value value--xlarge lg:value--xxlarge value--tnums" data-fit-value="true">{{ chess_bullet.best.rating }}</span>
+        <span class="label label--small lg:label--base">Bullet</span>
       </div>
     </div>
     <div class="item">
       <div class="meta"></div>
       <div class="content">
-        <span class="value value--xlarge value--tnums" data-fit-value="true">{{ chess_blitz.best.rating }}</span>
-        <span class="label label--small">Blitz</span>
+        <span class="value value--xlarge lg:value--xxlarge value--tnums" data-fit-value="true">{{ chess_blitz.best.rating }}</span>
+        <span class="label label--small lg:label--base">Blitz</span>
       </div>
     </div>
     <div class="item">
       <div class="meta"></div>
       <div class="content">
-        <span class="value value--xlarge value--tnums" data-fit-value="true">{{ chess_rapid.best.rating }}</span>
-        <span class="label label--small">Rapid</span>
+        <span class="value value--xlarge lg:value--xxlarge value--tnums" data-fit-value="true">{{ chess_rapid.best.rating }}</span>
+        <span class="label label--small lg:label--base">Rapid</span>
       </div>
     </div>
   </div>
-
   <div class="divider"></div>
-
-  <!-- Middle: Bullet win rate -->
-  <div class="flex flex--col gap--small">
+  <!-- Middle: Bullet and Blitz win rates -->
+  <div class="flex flex--col gap--small flex--stretch-x w--full">
     {% assign bullet_total = chess_bullet.record.win | plus: chess_bullet.record.draw | plus: chess_bullet.record.loss %}
     {% assign bullet_win_pct = chess_bullet.record.win | times: 100 | divided_by: bullet_total %}
-    <div class="flex flex--row gap--space-between">
-      <span class="label">Bullet Win Rate</span>
-      <span class="value value--small value--tnums">{{ bullet_win_pct }}%</span>
+    <div class="progress-bar progress-bar--large w--full">
+      <div class="content">
+        <span class="label lg:label--large">Bullet Win Rate</span>
+        <span class="value value--small lg:value--large value--tnums">{{ bullet_win_pct }}%</span>
+      </div>
+      <div class="track"><div class="fill" style="width: {{ bullet_win_pct }}%"></div></div>
     </div>
-    <div class="progress-bar progress-bar--large" data-progress="{{ bullet_win_pct }}"></div>
     <div class="flex flex--row gap--medium">
-      <span class="label label--xsmall">{{ chess_bullet.record.win | divided_by: 1000.0 | round: 1 }}k W</span>
-      <span class="label label--xsmall">{{ chess_bullet.record.draw }} D</span>
-      <span class="label label--xsmall">{{ chess_bullet.record.loss | divided_by: 1000.0 | round: 1 }}k L</span>
+      <span class="label label--small lg:label--base">{{ chess_bullet.record.win | divided_by: 1000.0 | round: 1 }}k W</span>
+      <span class="label label--small lg:label--base">{{ chess_bullet.record.draw }} D</span>
+      <span class="label label--small lg:label--base">{{ chess_bullet.record.loss | divided_by: 1000.0 | round: 1 }}k L</span>
     </div>
   </div>
-
-  <!-- Middle: Blitz win rate -->
-  <div class="flex flex--col gap--small">
+  <div class="flex flex--col gap--small flex--stretch-x w--full">
     {% assign blitz_total = chess_blitz.record.win | plus: chess_blitz.record.draw | plus: chess_blitz.record.loss %}
     {% assign blitz_win_pct = chess_blitz.record.win | times: 100 | divided_by: blitz_total %}
-    <div class="flex flex--row gap--space-between">
-      <span class="label">Blitz Win Rate</span>
-      <span class="value value--small value--tnums">{{ blitz_win_pct }}%</span>
+    <div class="progress-bar progress-bar--large w--full">
+      <div class="content">
+        <span class="label lg:label--large">Blitz Win Rate</span>
+        <span class="value value--small lg:value--large value--tnums">{{ blitz_win_pct }}%</span>
+      </div>
+      <div class="track"><div class="fill" style="width: {{ blitz_win_pct }}%"></div></div>
     </div>
-    <div class="progress-bar progress-bar--large" data-progress="{{ blitz_win_pct }}"></div>
     <div class="flex flex--row gap--medium">
-      <span class="label label--xsmall">{{ chess_blitz.record.win | divided_by: 1000.0 | round: 1 }}k W</span>
-      <span class="label label--xsmall">{{ chess_blitz.record.draw | divided_by: 1000.0 | round: 1 }}k D</span>
-      <span class="label label--xsmall">{{ chess_blitz.record.loss | divided_by: 1000.0 | round: 1 }}k L</span>
+      <span class="label label--small lg:label--base">{{ chess_blitz.record.win | divided_by: 1000.0 | round: 1 }}k W</span>
+      <span class="label label--small lg:label--base">{{ chess_blitz.record.draw | divided_by: 1000.0 | round: 1 }}k D</span>
+      <span class="label label--small lg:label--base">{{ chess_blitz.record.loss | divided_by: 1000.0 | round: 1 }}k L</span>
     </div>
   </div>
-
   <div class="divider"></div>
-
   <!-- Bottom: Tactics + Puzzle Rush -->
   <div class="grid grid--cols-2">
     <div class="item">
       <div class="meta"></div>
       <div class="content">
-        <span class="value value--medium value--tnums">{{ tactics.highest.rating }}</span>
-        <span class="label label--small">Tactics Best</span>
+        <span class="value value--base lg:value--large value--tnums">{{ tactics.highest.rating }}</span>
+        <span class="label label--small lg:label--base">Tactics Best</span>
       </div>
     </div>
     <div class="item">
       <div class="meta"></div>
       <div class="content">
-        <span class="value value--medium value--tnums">{{ puzzle_rush.best.score }}</span>
-        <span class="label label--small">Puzzle Rush</span>
+        <span class="value value--base lg:value--large value--tnums">{{ puzzle_rush.best.score }}</span>
+        <span class="label label--small lg:label--base">Puzzle Rush</span>
       </div>
     </div>
   </div>
-
 </div>
-
 <div class="title_bar">
   <div class="image image-stroke image-stroke--large">
     <svg xmlns="http://www.w3.org/2000/svg" version="1.0" width="16pt" height="19pt" viewBox="0 0 934.000000 1280.000000" preserveAspectRatio="xMidYMid meet">
