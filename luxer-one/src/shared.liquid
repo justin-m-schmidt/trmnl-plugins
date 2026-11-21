@@ -19,12 +19,13 @@
 {% endtemplate %}
 
 {% template lx_list %}
-<div class="flex flex--col gap--[0px] w--full">
+<div class="flex flex--col gap--[{{ pad | default: 9 }}px] w--full">
   {% assign mark = 32 %}{% if big %}{% assign mark = 46 %}{% endif %}{% if xl %}{% assign mark = mark | times: 3 | divided_by: 2 %}{% endif %}
   {% for p in packages limit: rows %}
-  <div class="flex flex--row flex--center-y gap--[12px] w--full" style="padding:{{ pad | default: 9 }}px 0;{% unless forloop.first %} border-top:1px solid #000;{% endunless %}">
-    {% if p.icon != "" %}<img src="{{ p.icon }}" alt="{{ p.carrier }}" class="flex-none" style="width:{{ mark }}px; height:{{ mark }}px;">{% else %}{% render "lx_package", size: mark, stroke: 8 %}{% endif %}
-    <div class="flex flex--col flex--left gap--[2px] stretch-x" style="min-width:0;">
+  {% unless forloop.first %}<div class="border--h-black w--full"></div>{% endunless %}
+  <div class="flex flex--row flex--center-y gap--[12px] w--full">
+    {% if p.icon != "" %}<img src="{{ p.icon }}" alt="{{ p.carrier }}" width="{{ mark }}" height="{{ mark }}" class="flex-none w--[{{ mark }}px] h--[{{ mark }}px]">{% else %}{% render "lx_package", size: mark, stroke: 8 %}{% endif %}
+    <div class="flex flex--col flex--left gap--[2px] stretch-x">
       <span class="title{% unless big %} title--small{% endunless %} lg:title--large" data-clamp="1">{{ p.title }}</span>
       {% if p.detail != "" %}<span class="label{% unless big %} label--small{% endunless %} lg:label--large" data-clamp="1">{{ p.detail }}</span>{% endif %}
     </div>
@@ -34,14 +35,15 @@
   {% endfor %}
   {% if count > rows %}
   {% assign more = count | minus: rows %}
-  <div class="w--full" style="padding-top:{{ pad | default: 9 }}px; border-top:1px solid #000;"><span class="label label--small lg:label--base">+ {{ more }} more</span></div>
+  <div class="border--h-black w--full"></div>
+  <div class="flex flex--row flex--left w--full"><span class="label label--small lg:label--base">+ {{ more }} more</span></div>
   {% endif %}
 </div>
 {% endtemplate %}
 
 {% template lx_qr %}
-<div class="flex flex--row flex--center-y gap--[12px]{% if compact %} flex-none lg:portrait:w--full{% else %} w--full{% endif %}" style="border:2px solid #000; border-radius:14px; padding:6px 6px 6px 14px; background:#fff; box-sizing:border-box;">
-  <div class="flex flex--col flex--left gap--[2px] stretch-x" style="min-width:0;">
+<div class="flex flex--row flex--center-y gap--[12px] rounded--base p--2 bg--white{% if compact %} flex-none lg:portrait:w--full{% else %} w--full{% endif %}" style="border:2px solid #000;">
+  <div class="flex flex--col flex--left gap--[2px] stretch-x">
     {% if compact %}
     <span class="label lg:label--large text--bold"><span>Scan<br>for<br>codes</span></span>
     {% else %}
@@ -49,7 +51,7 @@
     <span class="label label--small lg:label--base">Opens them on your phone</span>
     {% endif %}
   </div>
-  <div class="flex-none" style="width:{{ size }}px; height:{{ size }}px;">{{ url | qr_code }}</div>
+  {% if size > 128 %}<div class="flex-none" style="width:{{ size }}px; height:{{ size }}px;">{{ url | qr_code }}</div>{% else %}<div class="flex-none w--[{{ size }}px] h--[{{ size }}px]">{{ url | qr_code }}</div>{% endif %}
 </div>
 {% endtemplate %}
 

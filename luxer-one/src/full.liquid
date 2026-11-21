@@ -13,7 +13,7 @@
 </div>
 {% else %}
 <div class="layout layout--col layout--stretch-x">
-  <div class="flex flex--row flex--center-y portrait:flex--col portrait:flex--center-x gap--[36px] w--full">
+  <div class="flex flex--row flex--center-y portrait:flex--col portrait:flex--center-x gap--[28px] w--full">
     <div class="flex flex--col flex--center-x gap--[10px] w--[39cqw] portrait:w--full flex-none">
       <div class="flex flex--row flex--center-y gap--[14px]">
         {% if xl %}{% render "lx_package", size: 240 %}{% else %}{% render "lx_package", size: 150 %}{% endif %}
@@ -22,7 +22,8 @@
       <span class="label lg:label--large text--bold">{{ noun | capitalize }} to pick up</span>
       {% if multi %}{% render "lx_people", people: people %}{% endif %}
     </div>
-    <div class="flex flex--col gap--[12px] stretch-x portrait:w--full" style="min-width:0;{% if tall %} border-top:2px solid #000; padding-top:16px;{% else %} border-left:2px solid #000; padding-left:28px;{% endif %}">
+    {% if tall %}<div class="border--h-black w--full"></div>{% else %}<div class="border--v-black stretch-y"></div>{% endif %}
+    <div class="flex flex--col gap--[12px] stretch-x portrait:w--full">
       {% assign rows = 4 %}{% if qr %}{% assign rows = 3 %}{% endif %}{% if tall %}{% assign rows = rows | plus: 2 %}{% endif %}
       {% if qr %}
       {% render "lx_list", packages: packages, count: count, rows: rows, big: true, pad: 8, xl: xl %}
