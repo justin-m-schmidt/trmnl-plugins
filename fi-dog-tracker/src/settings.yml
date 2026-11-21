@@ -18,7 +18,7 @@ custom_fields:
   field_type: author_bio
   name: About This Plugin
   category: personal
-  description: 'Your dog''s day from the Fi collar. Pick one screen per plugin: an overview of steps and sleep, today only, the past week, or a walk timer that counts the time since the last walk and tells you when the next one is due. Add the plugin again to show more than one screen. Created by Justin.'
+  description: 'Your dog''s day from the Fi collar. Pick one screen per plugin: the Fi app''s home screen, an overview of steps and sleep, today only, the past week, or a walk timer that counts the time since the last walk and tells you when the next one is due. Add the plugin again to show more than one screen. Created by Justin.'
 - keyname: email
   field_type: string
   name: Fi email
@@ -33,12 +33,17 @@ custom_fields:
   name: Screen
   description: What this plugin shows. To show more than one, add the plugin again and pick another screen.
   options:
+  - Fi Homescreen style - steps, strain, naps and goals: home
   - Overview - today and the past 7 days: both
   - Today - steps, sleep and naps: today
   - This week - 7-day charts: week
   - Walk timer - time since the last walk: walk
-  default: both
+  default: home
   conditional_validation:
+  - when: home
+    hidden:
+    - max_hours
+    - preview_state
   - when: both
     hidden:
     - max_hours

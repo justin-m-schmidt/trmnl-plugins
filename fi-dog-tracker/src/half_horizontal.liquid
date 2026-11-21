@@ -1,6 +1,10 @@
-{% assign fi_view = view | default: trmnl.plugin_settings.custom_fields_values.view | default: "both" %}
+{% assign fi_view = view | default: trmnl.plugin_settings.custom_fields_values.view | default: "home" %}
 {% if error %}
   {% render "fi_error", error: error %}
+{% elsif fi_view == "home" %}
+<div class="layout fi-home-layout">
+  {% render "fi_home", size: "hh", today: today, strain: strain, week: week %}
+</div>
 {% elsif fi_view == "walk" %}
 <div class="layout layout--col layout--stretch-x">
   <div style="display:flex; align-items:center; gap:32px; width:100%;">
