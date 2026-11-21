@@ -24,7 +24,7 @@
   {% for p in packages limit: rows %}
   <div class="flex flex--row flex--center-y gap--[12px] w--full" style="padding:{{ pad | default: 9 }}px 0;{% unless forloop.first %} border-top:1px solid #000;{% endunless %}">
     {% if p.icon != "" %}<img src="{{ p.icon }}" alt="{{ p.carrier }}" style="flex:none; width:{{ mark }}px; height:{{ mark }}px;">{% else %}{% render "lx_package", size: mark, stroke: 8 %}{% endif %}
-    <div class="flex flex--col gap--[2px] stretch-x" style="min-width:0;">
+    <div class="flex flex--col flex--left gap--[2px] stretch-x" style="min-width:0;">
       <span class="title{% unless big %} title--small{% endunless %} lg:title--large" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ p.title }}</span>
       {% if p.detail != "" %}<span class="label{% unless big %} label--small{% endunless %} lg:label--large" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ p.detail }}</span>{% endif %}
     </div>
@@ -41,7 +41,7 @@
 
 {% template lx_qr %}
 <div class="flex flex--row flex--center-y gap--[12px]{% unless compact %} w--full{% endunless %}" style="border:2px solid #000; border-radius:14px; padding:6px 6px 6px 14px; background:#fff; box-sizing:border-box;{% if compact %} flex:none;{% endif %}">
-  <div class="flex flex--col gap--[2px]{% unless compact %} stretch-x{% endunless %}" style="min-width:0;">
+  <div class="flex flex--col flex--left gap--[2px]{% unless compact %} stretch-x{% endunless %}" style="min-width:0;">
     {% if compact %}
     <span class="label lg:label--large" style="font-weight:700;"><span>Scan<br>for<br>codes</span></span>
     {% else %}

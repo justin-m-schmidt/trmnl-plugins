@@ -1,30 +1,32 @@
+{% assign xl = false %}{% if trmnl.device.width > 1000 or trmnl.device.height > 1000 %}{% assign xl = true %}{% endif %}
+{% assign qr = false %}{% if pickup_url and pickup_url != "" %}{% assign qr = true %}{% endif %}{% assign qsize = pickup_qr %}{% if xl %}{% assign qsize = pickup_qr | times: 8 | divided_by: 5 %}{% endif %}
 {% if state == "auth" or state == "error" %}
-  {% render "lx_message", state: state, step: step, email: email, field: field, error: error, compact: true %}
+  {% render "lx_message", state: state, step: step, email: email, field: field, error: error, compact: true, xl: xl %}
 {% elsif count == 0 %}
-<div class="layout layout--row layout--center" style="gap:28px;">
-  {% render "lx_locker", size: 130 %}
-  <div style="display:flex; flex-direction:column; gap:4px;">
-    <span class="value">All picked up</span>
-    <span class="label">No packages waiting in your {% if multi %}lockers{% else %}locker{% endif %}</span>
-    {% if picked_total and picked_total > 0 %}<span class="label label--small"><span style="font-weight:700;">{{ picked_total }}{% if picked_more %}+{% endif %}</span> picked up so far</span>{% endif %}
-    {% if notice and notice != "" %}{% render "lx_people", people: people, small: true, align: "flex-start" %}{% endif %}
+<div class="layout layout--row layout--center gap--[28px]">
+  {% if xl %}{% render "lx_locker", size: 200 %}{% else %}{% render "lx_locker", size: 130 %}{% endif %}
+  <div class="flex flex--col flex--left gap--[4px]">
+    <span class="value lg:value--xlarge">All picked up</span>
+    <span class="label lg:label--large">No packages waiting in your {% if multi %}lockers{% else %}locker{% endif %}</span>
+    {% if picked_total and picked_total > 0 %}<span class="label label--outline label--small lg:label--large"><span><span style="font-weight:700;">{{ picked_total }}{% if picked_more %}+{% endif %}</span> picked up so far</span></span>{% endif %}
+    {% if notice and notice != "" %}{% render "lx_people", people: people, small: true, align: "left" %}{% endif %}
   </div>
 </div>
 {% else %}
 <div class="layout layout--col layout--stretch-x">
-  <div style="display:flex; align-items:center; gap:22px; width:100%;">
-    <div style="flex:none; width:{% if pickup_url and pickup_url != "" %}200{% else %}270{% endif %}px; display:flex; flex-direction:column; align-items:center; gap:4px;">
-      <div style="display:flex; align-items:center; gap:12px;">
-        {% render "lx_package", size: 96 %}
-        <span class="value value--xxlarge">{{ count }}</span>
+  <div class="flex flex--row flex--center-y gap--[22px] w--full">
+    <div class="flex flex--col flex--center-x gap--[4px] {% if qr %}w--[26cqw]{% else %}w--[34cqw]{% endif %}" style="flex:none;">
+      <div class="flex flex--row flex--center-y gap--[12px]">
+        {% if xl %}{% render "lx_package", size: 150 %}{% else %}{% render "lx_package", size: 96 %}{% endif %}
+        <span class="value value--xxlarge lg:value--mega">{{ count }}</span>
       </div>
-      <span class="label label--small" style="font-weight:700;">{{ noun | capitalize }} to pick up</span>
+      <span class="label label--small lg:label--large" style="font-weight:700;">{{ noun | capitalize }} to pick up</span>
       {% if multi %}{% render "lx_people", people: people, small: true %}{% endif %}
     </div>
-    <div style="flex:1; min-width:0; border-left:2px solid #000; padding-left:20px;">
-      {% render "lx_list", packages: packages, count: count, rows: 2, pad: 5 %}
+    <div class="stretch-x" style="min-width:0; border-left:2px solid #000; padding-left:20px;">
+      {% render "lx_list", packages: packages, count: count, rows: 2, pad: 5, xl: xl %}
     </div>
-    {% if pickup_url and pickup_url != "" %}{% render "lx_qr", url: pickup_url, size: pickup_qr, compact: true %}{% endif %}
+    {% if qr %}{% render "lx_qr", url: pickup_url, size: qsize, compact: true %}{% endif %}
   </div>
 </div>
 {% endif %}
