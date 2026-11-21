@@ -1,5 +1,5 @@
 {% template lx_package %}
-<svg xmlns="http://www.w3.org/2000/svg" width="{{ size }}" height="{{ size }}" viewBox="0 0 120 120" fill="none" stroke="#000" stroke-width="{{ stroke | default: 6 }}" stroke-linejoin="round" stroke-linecap="round" style="flex:none;">
+<svg xmlns="http://www.w3.org/2000/svg" width="{{ size }}" height="{{ size }}" viewBox="0 0 120 120" fill="none" stroke="#000" stroke-width="{{ stroke | default: 6 }}" stroke-linejoin="round" stroke-linecap="round" class="flex-none">
   <path d="M60 12 L104 34 L104 86 L60 108 L16 86 L16 34 Z" fill="#fff"></path>
   <path d="M16 34 L60 56 L104 34"></path>
   <path d="M60 56 L60 108"></path>
@@ -8,7 +8,7 @@
 {% endtemplate %}
 
 {% template lx_locker %}
-<svg xmlns="http://www.w3.org/2000/svg" width="{{ size }}" height="{{ size }}" viewBox="0 0 120 120" fill="none" stroke="#000" stroke-width="{{ stroke | default: 5 }}" stroke-linejoin="round" stroke-linecap="round" style="flex:none;">
+<svg xmlns="http://www.w3.org/2000/svg" width="{{ size }}" height="{{ size }}" viewBox="0 0 120 120" fill="none" stroke="#000" stroke-width="{{ stroke | default: 5 }}" stroke-linejoin="round" stroke-linecap="round" class="flex-none">
   <rect x="40" y="12" width="68" height="88" rx="3" fill="#fff"></rect>
   <rect x="54" y="26" width="40" height="60" stroke-width="3"></rect>
   <path d="M40 12 L54 26 M108 12 L94 26 M40 100 L54 86 M108 100 L94 86" stroke-width="3"></path>
@@ -23,13 +23,13 @@
   {% assign mark = 32 %}{% if big %}{% assign mark = 46 %}{% endif %}{% if xl %}{% assign mark = mark | times: 3 | divided_by: 2 %}{% endif %}
   {% for p in packages limit: rows %}
   <div class="flex flex--row flex--center-y gap--[12px] w--full" style="padding:{{ pad | default: 9 }}px 0;{% unless forloop.first %} border-top:1px solid #000;{% endunless %}">
-    {% if p.icon != "" %}<img src="{{ p.icon }}" alt="{{ p.carrier }}" style="flex:none; width:{{ mark }}px; height:{{ mark }}px;">{% else %}{% render "lx_package", size: mark, stroke: 8 %}{% endif %}
+    {% if p.icon != "" %}<img src="{{ p.icon }}" alt="{{ p.carrier }}" class="flex-none" style="width:{{ mark }}px; height:{{ mark }}px;">{% else %}{% render "lx_package", size: mark, stroke: 8 %}{% endif %}
     <div class="flex flex--col flex--left gap--[2px] stretch-x" style="min-width:0;">
-      <span class="title{% unless big %} title--small{% endunless %} lg:title--large" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ p.title }}</span>
-      {% if p.detail != "" %}<span class="label{% unless big %} label--small{% endunless %} lg:label--large" style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ p.detail }}</span>{% endif %}
+      <span class="title{% unless big %} title--small{% endunless %} lg:title--large" data-clamp="1">{{ p.title }}</span>
+      {% if p.detail != "" %}<span class="label{% unless big %} label--small{% endunless %} lg:label--large" data-clamp="1">{{ p.detail }}</span>{% endif %}
     </div>
-    {% if p.who != "" %}<span class="label label--filled{% unless big %} label--small{% endunless %} lg:label--large" style="flex:none;">{{ p.who }}</span>{% endif %}
-    {% if p.code != "" %}<span class="label label--outline lg:label--large" style="flex:none;">{{ p.code }}</span>{% endif %}
+    {% if p.who != "" %}<span class="label label--filled{% unless big %} label--small{% endunless %} lg:label--large flex-none">{{ p.who }}</span>{% endif %}
+    {% if p.code != "" %}<span class="label label--outline lg:label--large flex-none">{{ p.code }}</span>{% endif %}
   </div>
   {% endfor %}
   {% if count > rows %}
@@ -40,22 +40,22 @@
 {% endtemplate %}
 
 {% template lx_qr %}
-<div class="flex flex--row flex--center-y gap--[12px]{% unless compact %} w--full{% endunless %}" style="border:2px solid #000; border-radius:14px; padding:6px 6px 6px 14px; background:#fff; box-sizing:border-box;{% if compact %} flex:none;{% endif %}">
-  <div class="flex flex--col flex--left gap--[2px]{% unless compact %} stretch-x{% endunless %}" style="min-width:0;">
+<div class="flex flex--row flex--center-y gap--[12px]{% if compact %} flex-none lg:portrait:w--full{% else %} w--full{% endif %}" style="border:2px solid #000; border-radius:14px; padding:6px 6px 6px 14px; background:#fff; box-sizing:border-box;">
+  <div class="flex flex--col flex--left gap--[2px] stretch-x" style="min-width:0;">
     {% if compact %}
-    <span class="label lg:label--large" style="font-weight:700;"><span>Scan<br>for<br>codes</span></span>
+    <span class="label lg:label--large text--bold"><span>Scan<br>for<br>codes</span></span>
     {% else %}
     <span class="title title--small lg:title--large">Scan for codes</span>
     <span class="label label--small lg:label--base">Opens them on your phone</span>
     {% endif %}
   </div>
-  <div style="flex:none; width:{{ size }}px; height:{{ size }}px;">{{ url | qr_code }}</div>
+  <div class="flex-none" style="width:{{ size }}px; height:{{ size }}px;">{{ url | qr_code }}</div>
 </div>
 {% endtemplate %}
 
 {% template lx_people %}
 <div class="flex flex--row flex--wrap {% if align == "left" %}flex--left{% else %}flex--center-x{% endif %} gap--[16px]">
-  {% for q in people %}<span class="label{% if small %} label--small{% endif %} lg:label--large"><span>{{ q.name }}&nbsp;<span style="font-weight:700;">{% if q.note %}· {{ q.note }}{% else %}{{ q.count }}{% endif %}</span></span></span>{% endfor %}
+  {% for q in people %}<span class="label{% if small %} label--small{% endif %} lg:label--large"><span>{{ q.name }}&nbsp;<span class="text--bold">{% if q.note %}· {{ q.note }}{% else %}{{ q.count }}{% endif %}</span></span></span>{% endfor %}
 </div>
 {% endtemplate %}
 
@@ -64,12 +64,12 @@
   {% unless compact %}{% if xl %}{% render "lx_locker", size: 150 %}{% else %}{% render "lx_locker", size: 96 %}{% endif %}{% endunless %}
   {% if state == "error" %}
     <span class="title{% if compact %} title--small{% endif %} lg:title--large">Couldn't load Luxer One</span>
-    <span class="{% if compact %}label label--small lg:label--large{% else %}description lg:description--large{% endif %} w--max-[70cqw]" style="text-align:center;">{{ error }}</span>
+    <span class="{% if compact %}label label--small lg:label--large{% else %}description lg:description--large{% endif %} w--max-[70cqw] text--center">{{ error }}</span>
     {% unless compact %}<span class="label label--small lg:label--base">Will try again on the next refresh.</span>{% endunless %}
   {% else %}
     <span class="title{% if compact %} title--small{% endif %} lg:title--large">{% if step == "rejected" %}That code didn't work{% elsif step == "expired" %}Sign in again{% else %}Check your email{% endif %}</span>
-    <span class="{% if compact %}label label--small lg:label--large{% else %}description lg:description--large{% endif %} w--max-[70cqw]" style="text-align:center;">{% if step == "rejected" %}A new sign-in code is on its way to {{ email }}.{% elsif step == "expired" %}Luxer One signed this screen out and emailed a new code to {{ email }}.{% else %}Luxer One emailed a sign-in code to {{ email }}.{% endif %}</span>
-    <span class="label label--small lg:label--base" style="text-align:center;">Enter it as {{ field | default: "Verification code" }} in this plugin's settings on trmnl.com.</span>
+    <span class="{% if compact %}label label--small lg:label--large{% else %}description lg:description--large{% endif %} w--max-[70cqw] text--center">{% if step == "rejected" %}A new sign-in code is on its way to {{ email }}.{% elsif step == "expired" %}Luxer One signed this screen out and emailed a new code to {{ email }}.{% else %}Luxer One emailed a sign-in code to {{ email }}.{% endif %}</span>
+    <span class="label label--small lg:label--base text--center">Enter it as {{ field | default: "Verification code" }} in this plugin's settings on trmnl.com.</span>
   {% endif %}
 </div>
 {% endtemplate %}

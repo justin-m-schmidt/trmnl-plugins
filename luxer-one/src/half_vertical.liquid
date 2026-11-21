@@ -1,4 +1,5 @@
 {% assign xl = false %}{% if trmnl.device.width > 1000 or trmnl.device.height > 1000 %}{% assign xl = true %}{% endif %}
+{% assign tall = false %}{% if trmnl.device.orientation == "portrait" or trmnl.device.height > trmnl.device.width %}{% assign tall = true %}{% endif %}
 {% assign qr = false %}{% if pickup_url and pickup_url != "" %}{% assign qr = true %}{% endif %}{% assign qsize = pickup_qr %}{% if xl %}{% assign qsize = pickup_qr | times: 8 | divided_by: 5 %}{% endif %}
 {% if state == "auth" or state == "error" %}
   {% render "lx_message", state: state, step: step, email: email, field: field, error: error, xl: xl %}
@@ -6,8 +7,8 @@
 <div class="layout layout--col layout--center gap--[12px]">
   {% if xl %}{% render "lx_locker", size: 280 %}{% else %}{% render "lx_locker", size: 180 %}{% endif %}
   <span class="value lg:value--xlarge">All picked up</span>
-  <span class="label lg:label--large" style="text-align:center;">No packages waiting in your {% if multi %}lockers{% else %}locker{% endif %}</span>
-  {% if picked_total and picked_total > 0 %}<span class="label label--outline lg:label--large"><span><span style="font-weight:700;">{{ picked_total }}{% if picked_more %}+{% endif %}</span> picked up so far</span></span>{% endif %}
+  <span class="label lg:label--large text--center">No packages waiting in your {% if multi %}lockers{% else %}locker{% endif %}</span>
+  {% if picked_total and picked_total > 0 %}<span class="label label--outline lg:label--large"><span><span class="text--bold">{{ picked_total }}{% if picked_more %}+{% endif %}</span> picked up so far</span></span>{% endif %}
   {% if notice and notice != "" %}{% render "lx_people", people: people, small: true %}{% endif %}
 </div>
 {% else %}
@@ -18,11 +19,11 @@
       {% render "lx_package", size: box %}
       <span class="value {% if qr %}value--xlarge lg:value--xxxlarge{% else %}value--xxxlarge lg:value--giga{% endif %}">{{ count }}</span>
     </div>
-    <span class="label lg:label--large" style="font-weight:700;">{{ noun | capitalize }} to pick up</span>
+    <span class="label lg:label--large text--bold">{{ noun | capitalize }} to pick up</span>
     {% if multi %}{% render "lx_people", people: people, small: true %}{% endif %}
   </div>
   <div class="w--full" style="border-top:2px solid #000; padding-top:4px;">
-    {% if qr %}{% render "lx_list", packages: packages, count: count, rows: 2, pad: 6, xl: xl %}{% else %}{% render "lx_list", packages: packages, count: count, rows: 3, pad: 7, xl: xl %}{% endif %}
+    {% assign rows = 3 %}{% assign pad = 7 %}{% if qr %}{% assign rows = 2 %}{% assign pad = 6 %}{% endif %}{% if xl %}{% if tall %}{% assign rows = rows | plus: 2 %}{% assign pad = 30 %}{% else %}{% assign rows = rows | plus: 1 %}{% endif %}{% endif %}{% render "lx_list", packages: packages, count: count, rows: rows, pad: pad, xl: xl %}
   </div>
   {% if qr %}{% render "lx_qr", url: pickup_url, size: qsize %}{% endif %}
 </div>

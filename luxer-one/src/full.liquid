@@ -8,18 +8,18 @@
   {% if xl %}{% render "lx_locker", size: 330 %}{% else %}{% render "lx_locker", size: 210 %}{% endif %}
   <span class="value value--large lg:value--xlarge">All picked up</span>
   <span class="label lg:label--large">No packages waiting in your {% if multi %}lockers{% else %}locker{% endif %}</span>
-  {% if picked_total and picked_total > 0 %}<span class="label label--outline lg:label--large"><span><span style="font-weight:700;">{{ picked_total }}{% if picked_more %}+{% endif %}</span> picked up so far</span></span>{% endif %}
+  {% if picked_total and picked_total > 0 %}<span class="label label--outline lg:label--large"><span><span class="text--bold">{{ picked_total }}{% if picked_more %}+{% endif %}</span> picked up so far</span></span>{% endif %}
   {% if notice and notice != "" %}{% render "lx_people", people: people %}{% endif %}
 </div>
 {% else %}
 <div class="layout layout--col layout--stretch-x">
   <div class="flex flex--row flex--center-y portrait:flex--col portrait:flex--center-x gap--[36px] w--full">
-    <div class="flex flex--col flex--center-x gap--[10px] w--[39cqw] portrait:w--full" style="flex:none;">
+    <div class="flex flex--col flex--center-x gap--[10px] w--[39cqw] portrait:w--full flex-none">
       <div class="flex flex--row flex--center-y gap--[14px]">
         {% if xl %}{% render "lx_package", size: 240 %}{% else %}{% render "lx_package", size: 150 %}{% endif %}
         <span class="value value--xxxlarge lg:value--giga">{{ count }}</span>
       </div>
-      <span class="label lg:label--large" style="font-weight:700;">{{ noun | capitalize }} to pick up</span>
+      <span class="label lg:label--large text--bold">{{ noun | capitalize }} to pick up</span>
       {% if multi %}{% render "lx_people", people: people %}{% endif %}
     </div>
     <div class="flex flex--col gap--[12px] stretch-x portrait:w--full" style="min-width:0;{% if tall %} border-top:2px solid #000; padding-top:16px;{% else %} border-left:2px solid #000; padding-left:28px;{% endif %}">

@@ -8,19 +8,19 @@
   <div class="flex flex--col flex--left gap--[4px]">
     <span class="value lg:value--xlarge">All picked up</span>
     <span class="label lg:label--large">No packages waiting in your {% if multi %}lockers{% else %}locker{% endif %}</span>
-    {% if picked_total and picked_total > 0 %}<span class="label label--outline label--small lg:label--large"><span><span style="font-weight:700;">{{ picked_total }}{% if picked_more %}+{% endif %}</span> picked up so far</span></span>{% endif %}
+    {% if picked_total and picked_total > 0 %}<span class="label label--outline label--small lg:label--large"><span><span class="text--bold">{{ picked_total }}{% if picked_more %}+{% endif %}</span> picked up so far</span></span>{% endif %}
     {% if notice and notice != "" %}{% render "lx_people", people: people, small: true, align: "left" %}{% endif %}
   </div>
 </div>
 {% else %}
 <div class="layout layout--col layout--stretch-x">
-  <div class="flex flex--row flex--center-y gap--[22px] w--full">
-    <div class="flex flex--col flex--center-x gap--[4px] {% if qr %}w--[26cqw]{% else %}w--[34cqw]{% endif %}" style="flex:none;">
+  <div class="flex flex--row flex--center-y lg:portrait:flex--wrap gap--[22px] w--full">
+    <div class="flex flex--col flex--center-x gap--[4px] {% if qr %}w--[26cqw]{% else %}w--[34cqw]{% endif %} flex-none">
       <div class="flex flex--row flex--center-y gap--[12px]">
         {% if xl %}{% render "lx_package", size: 150 %}{% else %}{% render "lx_package", size: 96 %}{% endif %}
         <span class="value value--xxlarge lg:value--mega">{{ count }}</span>
       </div>
-      <span class="label label--small lg:label--large" style="font-weight:700;">{{ noun | capitalize }} to pick up</span>
+      <span class="label label--small lg:label--large text--bold">{{ noun | capitalize }} to pick up</span>
       {% if multi %}{% render "lx_people", people: people, small: true %}{% endif %}
     </div>
     <div class="stretch-x" style="min-width:0; border-left:2px solid #000; padding-left:20px;">
