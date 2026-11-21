@@ -18,9 +18,9 @@ async function gql(cookie, query) {
     try { return JSON.parse(text); } catch { return { status: res.status, text: text.slice(0, 300) }; }
   } catch (e) { return { fetchError: String(e?.message ?? e) }; }
 }
-const CAND = "start end date period title cursor nextCursor summary stepSummary strain strainScore strainLevel score level label value steps totalSteps stepGoal goal data id type rank ranking position region state stateName area name pet petId window total count change delta trend previousRank rankChange percentile leaderboard entries items rankings pets top".split(" ");
+const CAND = "start end date period title strain strainScore strainLevel strainValue score level label value steps totalSteps stepGoal goal stepGoalPercent percent data id type rank region state stateName areaName name total count change delta trend previousRank rankChange percentile entries pets pet petId stats week weekStart description size participants totalPets".split(" ");
 function digest(r) {
-  if (!r?.errors) return JSON.stringify(r).slice(0, 900);
+  if (!r?.errors) return JSON.stringify(r).slice(0, 1200);
   const bad = {};
   const notes = [];
   for (const e of r.errors) {
@@ -31,7 +31,7 @@ function digest(r) {
   const valid = Object.entries(bad).map(([t, s]) => `${t} VALID[${CAND.filter((c) => !s.has(c)).join(",")}]`);
   return `${valid.join(" ; ")} NOTES[${notes.join(" / ")}]`.slice(0, 2500);
 }
-const raw = (r) => (r?.errors ? r.errors.map((e) => e.message).join(" / ") : JSON.stringify(r)).slice(0, 1200);
+const raw = (r) => (r?.errors ? r.errors.map((e) => e.message).join(" / ") : JSON.stringify(r)).slice(0, 600);
 async function run(input) {
   try {
     const cookie = await login(setting(input, "email"), setting(input, "password"));
@@ -39,15 +39,13 @@ async function run(input) {
     const id = u?.data?.currentUser?.userHouseholds?.[0]?.household?.pets?.[0]?.id;
     if (!id) return { probe: JSON.stringify(u).slice(0, 800) };
     const p = (b) => `{ pet(id: "${id}") { ${b} } }`;
-    const [a, b, c, d, e, f] = await Promise.all([
-      gql(cookie, p(`stepFeed(period: DAY) { ${CAND.join(" ")} }`)),
-      gql(cookie, `{ petRanking { ${CAND.join(" ")} } }`),
-      gql(cookie, `{ petRanking(zzz: 1) { __typename } }`),
-      gql(cookie, `{ leaderboard(window: ZZZ) { __typename } }`),
-      gql(cookie, `{ leaderboard(window: ZZZ, zzz: 1) { ${CAND.join(" ")} } }`),
-      gql(cookie, p(`stepFeed(period: DAY) { stepSummary { __typename } }`)),
+    const windows = ["DAY", "DAILY", "WEEK", "WEEKLY", "MONTH", "MONTHLY", "ALL_TIME", "TODAY", "LAST_7_DAYS", "CURRENT_WEEK", "THIS_WEEK", "SEVEN_DAYS"];
+    const wins = await Promise.all(windows.map(async (w) => `${w}: ${raw(await gql(cookie, `{ petRanking(petId: "${id}", window: ${w}) { score rank } }`))}`));
+    const [a, b] = await Promise.all([
+      gql(cookie, p(`stepFeed(period: DAY) { stepSummary { ${CAND.join(" ")} } }`)),
+      gql(cookie, `{ leaderboard(window: WEEK) { window stats { ${CAND.join(" ")} } week { ${CAND.join(" ")} } entries { ${CAND.join(" ")} } } }`),
     ]);
-    return { probe: [`STEPFEED ${digest(a)}`, `PETRANKING ${digest(b)}`, `PETRANKING.args ${raw(c)}`, `LB.enum ${raw(d)}`, `LB.fields ${digest(e)}`, `STEPSUMMARY ${raw(f)}`].join("\n") };
+    return { probe: [`STEPSUMMARY ${digest(a)}`, `LEADERBOARD ${digest(b)}`, ...wins].join("\n").slice(0, 9000) };
   } catch (e) {
     return { probe: `ERR ${e?.message ?? e}` };
   }
