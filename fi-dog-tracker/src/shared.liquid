@@ -58,7 +58,7 @@
   /* Walk timer ring: sized from the layout (container query units), so it grows on TRMNL X. */
   .fi-cq { container-type: size; }
   .fi-ring { flex: none; display: block; }
-  .fi-ring--full { width: min(88cqh, 44cqw); height: min(88cqh, 44cqw); }
+  .fi-ring--full { width: min(88cqh, 50cqw); height: min(88cqh, 50cqw); }
   .fi-ring--hh { width: min(90cqh, 30cqw); height: min(90cqh, 30cqw); }
   .fi-ring--hv { width: min(60cqh, 80cqw); height: min(60cqh, 80cqw); }
   .fi-ring--q { width: min(86cqh, 42cqw); height: min(86cqh, 42cqw); }
@@ -199,7 +199,7 @@
               { name: "Sleep", data: days.map(function (d) { return d.sleep_h; }), color: fiPaint.chart("sleep", el) || TRMNLCharts.series(0, 2, { el: el }) }
             ];
         return Highcharts.chart(el, TRMNLCharts.merge(TRMNLCharts.options({ el: el }), {
-          chart: { type: "column", height: opts.fill ? null : px(opts.height || 200), spacing: px([labels ? 18 : 4, 0, 0, 0]) },
+          chart: { type: "column", height: null, spacing: px([labels ? 18 : 4, 0, 0, 0]) },
           legend: { enabled: false },
           plotOptions: {
             series: { animation: false, enableMouseTracking: false, borderWidth: 0, pointPadding: 0.08, groupPadding: 0.06 },
