@@ -8,12 +8,13 @@ const IDLE_HIDE_MS = 24 * 3600e3; // hide after a full day with nothing to pick 
 // The page the optional on-screen QR code opens. Fixed here on purpose: it is not a form setting.
 const PICKUP_PAGE = "https://justin-m-schmidt.github.io/luxer-one-locker-codes-page-for-trmnl/";
 // Form fields per person. The form reveals each next block once the email before it is filled in.
-const SLOTS = [1, 2, 3, 4, 5].map((n) => ({
-  n,
-  email: n === 1 ? "email" : `email_${n}`,
-  code: n === 1 ? "code" : `code_${n}`,
-  name: n === 1 ? "nickname" : `nickname_${n}`,
-}));
+const SLOTS = [
+  { n: 1, email: "email", code: "code", name: "nickname" },
+  { n: 2, email: "email_2", code: "code_2", name: "nickname_2" },
+  { n: 3, email: "email_3", code: "code_3", name: "nickname_3" },
+  { n: 4, email: "email_4", code: "code_4", name: "nickname_4" },
+  { n: 5, email: "email_5", code: "code_5", name: "nickname_5" },
+];
 
 function setting(input, key) {
   const value = input?.trmnl?.plugin_settings?.custom_fields_values?.[key] ?? input?.[key];
