@@ -8,29 +8,11 @@ framework_version: 3.1.1
 serverless_language: node
 refresh_interval_floor:
 polling_url: https://api.chess.com/pub/player/{{ username }}/stats
-polling_headers: ''
-polling_body: ''
+polling_headers:
+polling_body:
 id: 371719
 oauth_enabled: 'false'
 oauth_pkce_enabled: 'no'
-oauth_authorize_url: ''
-oauth_token_url: ''
-oauth_scopes: ''
-oauth_scope_separator: ''
-oauth_refresh_url: ''
-oauth_auth_params: ''
-oauth_token_headers: ''
-oauth_token_site: ''
-oauth_token_params: ''
-oauth_token_request_auth_method: ''
-oauth_body_format: ''
-oauth_token_response_metadata: ''
-oauth_authorization_method: ''
-oauth_refresh_params: ''
-oauth_token_field_name: ''
-oauth_expiry_field_name: ''
-oauth_expiry_strategy: ''
-oauth_fixed_expiry_ms: ''
 custom_fields:
 - keyname: username
   field_type: string
@@ -41,7 +23,8 @@ custom_fields:
   name: About This Plugin
   category: education,personal
   field_type: author_bio
-  description: Show stats from your chess.com profile. Created by Justin.
+  description: Show stats from your chess.com profile. Created by Justin (github.com/justin-m-schmidt).
+  github_url: https://github.com/justin-m-schmidt
 name: Chess.com
-description:
+description: Ratings, records and win rates
 refresh_interval: 15
