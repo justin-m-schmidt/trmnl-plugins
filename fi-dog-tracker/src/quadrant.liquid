@@ -6,33 +6,33 @@
   {% render "fi_home", size: "q", today: today, strain: strain, week: week %}
 </div>
 {% elsif fi_view == "walk" %}
-<div class="layout layout--col layout--stretch-x">
-  <div style="display:flex; align-items:center; gap:14px; width:100%;">
-    {% render "fi_ring", size: 150, state: walk.state, big: walk.big, sub: walk.sub, line1: walk.line1, line2: walk.line2, dash: walk.ring.dash %}
-    <div style="flex:1; min-width:0; display:flex; flex-direction:column; align-items:flex-start; gap:6px;">
-      <span class="label" style="font-weight:700;">{{ walk.label }}</span>
-      <span class="label label--small">{{ walk.status }}</span>
-      <span class="label label--small">Today: {{ walk.strip.summary }}</span>
+<div class="layout layout--col layout--stretch-x fi-cq">
+  <div class="flex flex--row flex--center-y gap--medium w--full">
+    {% render "fi_ring", size: "q", state: walk.state, big: walk.big, sub: walk.sub, line1: walk.line1, line2: walk.line2, dash: walk.ring.dash %}
+    <div class="flex flex--col flex--left gap--xsmall grow">
+      <span class="label text--bold lg:label--large">{{ walk.label }}</span>
+      <span class="label label--small lg:label--base">{{ walk.status }}</span>
+      <span class="label label--small lg:label--base">Today: {{ walk.strip.summary }}</span>
     </div>
   </div>
 </div>
 {% else %}
 <div class="layout layout--col layout--stretch-x gap--small">
   <div class="flex flex--col">
-    <span class="value value--large value--tnums">{{ today.steps_label }}</span>
-    <span class="label label--small">Steps today · {{ today.pct }}% of goal</span>
+    <span class="value value--large lg:value--xxlarge value--tnums">{{ today.steps_label }}</span>
+    <span class="label label--small lg:label--base">Steps today · {{ today.pct }}% of goal</span>
   </div>
   <div class="progress-bar progress-bar--small">
     <div class="track"><div class="fill" data-fi="activity" style="width: {{ today.bar_pct }}%"></div></div>
   </div>
   <div class="grid grid--cols-2">
     <div class="flex flex--col">
-      <span class="value value--small value--tnums">{{ today.sleep }}</span>
-      <span class="label label--small">{{ today.sleep_title | default: "Sleep" }}</span>
+      <span class="value value--small lg:value--large value--tnums">{{ today.sleep }}</span>
+      <span class="label label--small lg:label--base">{{ today.sleep_title | default: "Sleep" }}</span>
     </div>
     <div class="flex flex--col">
-      <span class="value value--small value--tnums">{{ today.nap }}</span>
-      <span class="label label--small">Naps</span>
+      <span class="value value--small lg:value--large value--tnums">{{ today.nap }}</span>
+      <span class="label label--small lg:label--base">Naps</span>
     </div>
   </div>
 </div>

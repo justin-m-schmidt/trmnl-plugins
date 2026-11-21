@@ -6,45 +6,46 @@
   {% render "fi_home", size: "hh", today: today, strain: strain, week: week %}
 </div>
 {% elsif fi_view == "walk" %}
-<div class="layout layout--col layout--stretch-x">
-  <div style="display:flex; align-items:center; gap:32px; width:100%;">
-    {% render "fi_ring", size: 160, state: walk.state, big: walk.big, sub: walk.sub, line1: walk.line1, line2: walk.line2, dash: walk.ring.dash %}
-    <div style="flex:1; min-width:0; display:flex; flex-direction:column; align-items:flex-start; gap:8px;">
+<div class="layout layout--col layout--stretch-x fi-cq">
+  <div class="flex flex--row flex--center-y gap--xlarge w--full">
+    {% render "fi_ring", size: "hh", state: walk.state, big: walk.big, sub: walk.sub, line1: walk.line1, line2: walk.line2, dash: walk.ring.dash %}
+    <div class="flex flex--col flex--left gap--small grow">
       {% render "fi_status", state: walk.state, status: walk.status %}
+      <span class="label label--small hidden lg:visible">Walk due after {{ walk.limit }} without a walk</span>
       {% render "fi_strip", strip: walk.strip, axis: walk.axis %}
     </div>
   </div>
 </div>
 {% else %}
-<div class="layout layout--col layout--stretch-x">
-  <div class="grid grid--cols-3 gap--large">
-    <div class="flex flex--col gap--small">
+<div class="layout layout--col layout--stretch-x layout--stretch-y">
+  <div class="grid grid--cols-3 gap--large grow">
+    <div class="flex flex--col flex--center-y gap--small h--full">
       <div class="flex flex--col">
-        <span class="value value--base value--tnums">{{ today.steps_label }}</span>
-        <span class="label label--small">Steps today · {{ today.pct }}% of goal</span>
+        <span class="value value--base lg:value--xlarge value--tnums">{{ today.steps_label }}</span>
+        <span class="label label--small lg:label--base">Steps today · {{ today.pct }}% of goal</span>
       </div>
       <div class="progress-bar progress-bar--small w--full">
         <div class="track"><div class="fill" data-fi="activity" style="width: {{ today.bar_pct }}%"></div></div>
       </div>
       <div class="flex flex--col">
-        <span class="value value--small value--tnums">{{ today.sleep }}</span>
-        <span class="label label--small">{{ today.sleep_title | default: "Sleep" }} · +{{ today.nap }} naps</span>
+        <span class="value value--small lg:value--large value--tnums">{{ today.sleep }}</span>
+        <span class="label label--small lg:label--base">{{ today.sleep_title | default: "Sleep" }} · +{{ today.nap }} naps</span>
       </div>
     </div>
-    <div class="flex flex--col gap--xsmall">
-      <span class="label label--small">Steps · 7 days</span>
-      <div id="fi-steps-hh" class="w--full"></div>
+    <div class="flex flex--col gap--xsmall h--full">
+      <span class="label label--small lg:label--base">Steps · 7 days</span>
+      <div id="fi-steps-hh" class="w--full grow"></div>
     </div>
-    <div class="flex flex--col gap--xsmall">
-      <span class="label label--small">Sleep + naps (h) · 7 days</span>
-      <div id="fi-sleep-hh" class="w--full"></div>
+    <div class="flex flex--col gap--xsmall h--full">
+      <span class="label label--small lg:label--base">Sleep + naps (h) · 7 days</span>
+      <div id="fi-sleep-hh" class="w--full grow"></div>
     </div>
   </div>
 </div>
 <script>
   var fiDaysHH = {{ days | json }};
-  fiChart("fi-steps-hh", "steps", fiDaysHH, {{ today.goal | default: 0 }}, { height: 140, font: 12, narrow: true, ticks: 3 });
-  fiChart("fi-sleep-hh", "sleep", fiDaysHH, 0, { height: 140, font: 12, narrow: true, ticks: 3 });
+  fiChart("fi-steps-hh", "steps", fiDaysHH, {{ today.goal | default: 0 }}, { fill: true, font: 12, narrow: true, ticks: 3 });
+  fiChart("fi-sleep-hh", "sleep", fiDaysHH, 0, { fill: true, font: 12, narrow: true, ticks: 3 });
 </script>
 {% endif %}
 {% render "fi_title_bar", view: fi_view, pet: pet, walk: walk, updated: updated, demo: demo, sample: sample, error: error %}
