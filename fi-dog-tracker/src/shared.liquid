@@ -25,6 +25,7 @@
   .fi-card { background: var(--fi-card); border-radius: calc(var(--u) * 22px); position: relative; overflow: hidden;
     padding: calc(var(--u) * 16px) calc(var(--u) * 24px); box-sizing: border-box; min-width: 0; min-height: 0; }
   .fi-steps { flex: 1.12; display: flex; align-items: center; justify-content: space-between; gap: calc(var(--u) * 12px); }
+  .fi-steps-text { min-width: 0; }
   .fi-row { flex: 1; display: flex; gap: calc(var(--u) * 14px); min-height: 0; }
   .fi-row .fi-card { flex: 1; }
   .fi-h { font-size: calc(var(--u) * 25px); font-weight: 500; line-height: 1.15; white-space: nowrap; }
@@ -52,8 +53,21 @@
   .fi-home--hv .fi-donut { margin-right: 0; }
   .fi-home--hv .fi-art svg { width: 92%; }
   .fi-home--q { --u: 0.56; }
-  .fi-home--q .fi-donut { width: 84px; height: 84px; margin-right: 0; }
+  .fi-home--q .fi-donut { width: calc(var(--u) * 150px); height: calc(var(--u) * 150px); margin-right: 0; }
   .fi-home--q .fi-art, .fi-home--q .fi-chev { display: none; }
+  /* Walk timer ring: sized from the layout (container query units), so it grows on TRMNL X. */
+  .fi-cq { container-type: size; }
+  .fi-ring { flex: none; display: block; }
+  .fi-ring--full { width: min(88cqh, 44cqw); height: min(88cqh, 44cqw); }
+  .fi-ring--hh { width: min(90cqh, 30cqw); height: min(90cqh, 30cqw); }
+  .fi-ring--hv { width: min(60cqh, 80cqw); height: min(60cqh, 80cqw); }
+  .fi-ring--q { width: min(86cqh, 42cqw); height: min(86cqh, 42cqw); }
+  .fi-strip-bar { position: relative; height: 26px; border-bottom: 2px solid #000; }
+  .fi-strip-bar .fi-blk { position: absolute; bottom: 0; min-width: 6px; height: 16px; box-sizing: border-box; background: #000; }
+  .fi-strip-bar .fi-blk--live { border: 2px solid #000; border-bottom: 0; background: #fff; }
+  .fi-strip-bar .fi-now { position: absolute; bottom: 0; width: 0; height: 100%; border-left: 2px dotted #000; }
+  .screen--lg .fi-strip-bar { height: 44px; border-bottom-width: 3px; }
+  .screen--lg .fi-strip-bar .fi-blk { height: 28px; }
 </style>
 <script>
   // Colour e-ink: steps and walks in the Fi app's green, night sleep in its light purple and
@@ -90,11 +104,25 @@
       if (!f.image) return f.color;
       try { return window.TRMNLPaint.toHighcharts(f); } catch (e) { return f.color; }
     }
+    // The home cards are drawn for the TRMNL OG (800x480); scale them to the screen they are on,
+    // so they fill a TRMNL X in landscape and portrait.
+    var BASE_U = { full: 1, hh: 0.7, hv: 0.78, q: 0.56 };
+    function scaleHome(home) {
+      var screen = home.closest(".screen");
+      if (!screen) return;
+      var w = screen.clientWidth, h = screen.clientHeight;
+      if (!w || !h) return;
+      var s = w >= h ? Math.min(w / 800, h / 480) : Math.min(w / 480, h / 800) * 0.6;
+      if (s > 0.98 && s < 1.02) return;
+      var size = (home.className.match(/fi-home--(\w+)/) || [])[1] || "full";
+      home.style.setProperty("--u", ((BASE_U[size] || 1) * s).toFixed(3));
+    }
     // Colour screens get the app's palette, 2- and 4-bit screens keep the solid greys, and
     // anything else is treated as 1-bit, where only outlines survive.
     function markHome() {
       var homes = document.querySelectorAll(".fi-home");
       for (var i = 0; i < homes.length; i++) {
+        scaleHome(homes[i]);
         if (kind(homes[i]) !== "mono") homes[i].classList.add("fi-color");
         else if (!/screen--(2bit|4bit)/.test(screenClass(homes[i]))) homes[i].classList.add("fi-1bit");
       }
@@ -171,7 +199,7 @@
               { name: "Sleep", data: days.map(function (d) { return d.sleep_h; }), color: fiPaint.chart("sleep", el) || TRMNLCharts.series(0, 2, { el: el }) }
             ];
         return Highcharts.chart(el, TRMNLCharts.merge(TRMNLCharts.options({ el: el }), {
-          chart: { type: "column", height: px(opts.height || 200), spacing: px([labels ? 18 : 4, 0, 0, 0]) },
+          chart: { type: "column", height: opts.fill ? null : px(opts.height || 200), spacing: px([labels ? 18 : 4, 0, 0, 0]) },
           legend: { enabled: false },
           plotOptions: {
             series: { animation: false, enableMouseTracking: false, borderWidth: 0, pointPadding: 0.08, groupPadding: 0.06 },
@@ -214,7 +242,7 @@
 {% template fi_home %}
 <div class="fi-home fi-home--{{ size }}">
   <div class="fi-card fi-steps">
-    <div style="min-width:0">
+    <div class="fi-steps-text">
       <div class="fi-h">Steps</div>
       <div class="fi-big">{{ today.steps_label }}</div>
       {% if strain %}
@@ -266,7 +294,7 @@
 {% comment %} Walk timer: the ring, one drawing per state. {% endcomment %}
 {% template fi_ring %}
 {% assign ink = "#000" %}
-<svg xmlns="http://www.w3.org/2000/svg" width="{{ size }}" height="{{ size }}" viewBox="0 0 230 230" style="flex:none;" font-family="Inter, Helvetica, Arial, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" class="fi-ring fi-ring--{{ size }}" viewBox="0 0 230 230" font-family="Inter, Helvetica, Arial, sans-serif">
   {% if state == "due" %}
     {% assign ink = "#fff" %}
     <circle cx="115" cy="115" r="107" fill="#000"></circle>
@@ -292,24 +320,24 @@
 
 {% template fi_status %}
 {% if state == "due" %}
-<span class="label" style="font-weight:700; background:#000; color:#fff; padding:3px 12px; border-radius:6px;">{{ status }}</span>
+<span class="label label--filled text--bold lg:label--large">{{ status }}</span>
 {% else %}
-<span class="label" style="font-weight:700;">{{ status }}</span>
+<span class="label text--bold lg:label--large">{{ status }}</span>
 {% endif %}
 {% endtemplate %}
 
 {% comment %} Walk timer: today's walks on a 6am to 10pm strip. {% endcomment %}
 {% template fi_strip %}
-<div style="display:flex; justify-content:space-between; width:100%; align-items:baseline;">
-  <span class="label" style="font-weight:700;">Today's walks</span>
-  <span class="label label--small">{% if strip.known %}{{ strip.summary }}{% else %}History unavailable{% endif %}</span>
+<div class="flex flex--row flex--between w--full">
+  <span class="label text--bold lg:label--large">Today's walks</span>
+  <span class="label label--small lg:label--base">{% if strip.known %}{{ strip.summary }}{% else %}History unavailable{% endif %}</span>
 </div>
-<div style="width:100%;">
-  <div style="position:relative; height:26px; border-bottom:2px solid #000;">
-    {% for b in strip.blocks %}<div {% unless b.live %}data-fi="activity" {% endunless %}style="position:absolute; bottom:0; left:{{ b.left }}%; width:{{ b.width }}%; min-width:6px; height:16px; box-sizing:border-box; {% if b.live %}border:2px solid #000; border-bottom:0; background:#fff;{% else %}background:#000;{% endif %}"></div>{% endfor %}
-    {% if strip.show_now %}<div style="position:absolute; bottom:0; left:{{ strip.now }}%; width:0; height:26px; border-left:2px dotted #000;"></div>{% endif %}
+<div class="w--full">
+  <div class="fi-strip-bar">
+    {% for b in strip.blocks %}<div {% unless b.live %}data-fi="activity" {% endunless %}class="fi-blk{% if b.live %} fi-blk--live{% endif %}" style="left:{{ b.left }}%; width:{{ b.width }}%;"></div>{% endfor %}
+    {% if strip.show_now %}<div class="fi-now" style="left:{{ strip.now }}%;"></div>{% endif %}
   </div>
-  <div style="display:flex; justify-content:space-between; width:100%;">{% for a in axis %}<span class="label label--small">{{ a }}</span>{% endfor %}</div>
+  <div class="flex flex--row flex--between w--full">{% for a in axis %}<span class="label label--small lg:label--base">{{ a }}</span>{% endfor %}</div>
 </div>
 {% endtemplate %}
 
