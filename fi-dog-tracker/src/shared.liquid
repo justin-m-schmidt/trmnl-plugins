@@ -1,4 +1,52 @@
-{% assign fi_view = view | default: trmnl.plugin_settings.custom_fields_values.view | default: "both" %}
+{% assign fi_view = view | default: trmnl.plugin_settings.custom_fields_values.view | default: "home" %}
+<style>
+  /* Fi Homescreen style: the Fi app's home cards on its plain grey background. Greys on
+     black-and-white screens, the app's own colours once fiPaint marks a colour screen. */
+  .view:has(.fi-home) { background: #DADADA; }
+  .view:has(.fi-home.fi-color) { background: #F2F1EF; }
+  .view:has(.fi-home) .title_bar { background: transparent !important; background-image: none !important; }
+  .fi-home-layout { display: flex; flex-direction: column; align-items: stretch; justify-content: stretch; }
+  .fi-home { --u: 1; --fi-card: #FFFFFF; --fi-ink: #000; --fi-muted: #555; --fi-track: #D2D2D2; --fi-ring: #000; --fi-ring-text: #000;
+    --fi-slider-a: #EDEDED; --fi-slider-b: #999; --fi-knob: #777; --fi-cloud-a: #8A8A8A; --fi-cloud-b: #E2E2E2; --fi-zz: #C6C6C6;
+    --fi-pod-side: #D0D0D0; --fi-pod-mid: #7C7C7C; --fi-trophy: #A6A6A6; --fi-chev: #999;
+    flex: 1; width: 100%; min-height: 0; display: flex; flex-direction: column; gap: calc(var(--u) * 14px);
+    font-family: Inter, "Helvetica Neue", Helvetica, Arial, sans-serif; color: var(--fi-ink); box-sizing: border-box; }
+  .fi-home.fi-color { --fi-ink: #222; --fi-muted: #8E8782; --fi-track: #D2F0DE; --fi-ring: #5ECB76; --fi-ring-text: #3E9F5A;
+    --fi-slider-a: #E7E4E1; --fi-slider-b: #B8B3AE; --fi-knob: #BDB8B3; --fi-cloud-a: #C4A8F6; --fi-cloud-b: #F1ECFC; --fi-zz: #E9E0FB;
+    --fi-pod-side: #F7DA9C; --fi-pod-mid: #F0A73F; --fi-trophy: #F4D48C; --fi-chev: #AAA39E; }
+  .fi-card { background: var(--fi-card); border-radius: calc(var(--u) * 22px); position: relative; overflow: hidden;
+    padding: calc(var(--u) * 16px) calc(var(--u) * 24px); box-sizing: border-box; min-width: 0; min-height: 0; }
+  .fi-steps { flex: 1.12; display: flex; align-items: center; justify-content: space-between; gap: calc(var(--u) * 12px); }
+  .fi-row { flex: 1; display: flex; gap: calc(var(--u) * 14px); min-height: 0; }
+  .fi-row .fi-card { flex: 1; }
+  .fi-h { font-size: calc(var(--u) * 25px); font-weight: 500; line-height: 1.15; white-space: nowrap; }
+  .fi-big { font-size: calc(var(--u) * 50px); font-weight: 700; letter-spacing: -0.02em; line-height: 1.05; margin-top: calc(var(--u) * 2px); white-space: nowrap; }
+  .fi-row .fi-big { font-size: calc(var(--u) * 42px); }
+  .fi-big small { font-size: 0.5em; font-weight: 500; letter-spacing: 0; color: var(--fi-muted); margin-left: 0.2em; }
+  .fi-cap { font-family: "DejaVu Sans Mono", Menlo, "Courier New", monospace; font-size: calc(var(--u) * 14px); letter-spacing: 0.24em;
+    color: var(--fi-muted); margin-top: calc(var(--u) * 12px); text-transform: uppercase; white-space: nowrap; }
+  .fi-strain { display: flex; align-items: center; gap: calc(var(--u) * 10px); }
+  .fi-strain b { font-size: calc(var(--u) * 40px); font-weight: 500; color: var(--fi-muted); line-height: 1.1; }
+  .fi-slider { position: relative; width: calc(var(--u) * 150px); height: calc(var(--u) * 12px); border-radius: 99px;
+    background: linear-gradient(90deg, var(--fi-slider-a), var(--fi-slider-b)); }
+  .fi-knob { position: absolute; top: 50%; width: calc(var(--u) * 17px); height: calc(var(--u) * 17px); border-radius: 50%;
+    background: var(--fi-knob); border: calc(var(--u) * 3px) solid var(--fi-card); transform: translate(-50%, -50%); }
+  .fi-donut { width: calc(var(--u) * 178px); height: calc(var(--u) * 178px); flex: none; margin-right: calc(var(--u) * 22px); }
+  .fi-chev { position: absolute; top: calc(var(--u) * 20px); right: calc(var(--u) * 20px); width: calc(var(--u) * 11px); height: calc(var(--u) * 19px); }
+  .fi-art { position: absolute; left: 0; right: 0; bottom: 0; display: flex; justify-content: center; }
+  .fi-art svg { width: 66%; height: auto; display: block; }
+  .fi-home--hh { --u: 0.7; flex-direction: row; }
+  .fi-home--hh .fi-steps { flex: 1.55; }
+  .fi-home--hh .fi-row { flex: 2; }
+  .fi-home--hh .fi-donut { margin-right: 0; }
+  .fi-home--hh .fi-art svg { width: 84%; }
+  .fi-home--hv { --u: 0.78; }
+  .fi-home--hv .fi-donut { margin-right: 0; }
+  .fi-home--hv .fi-art svg { width: 92%; }
+  .fi-home--q { --u: 0.56; }
+  .fi-home--q .fi-donut { width: 84px; height: 84px; margin-right: 0; }
+  .fi-home--q .fi-art, .fi-home--q .fi-chev { display: none; }
+</style>
 <script>
   // Colour e-ink: steps and walks in the Fi app's green, night sleep in its light purple and
   // naps in its dark purple. Black-and-white and grayscale screens are left exactly as they
@@ -7,6 +55,7 @@
   // Mark an element with data-fi="activity|sleep|nap" to have it painted; an SVG shape names
   // the attribute to set in data-fi-attr (default stroke). data-fi="key" swaps a legend's
   // text for data-fi-color-text, because the light and dark roles differ on colour screens.
+  // The home screen carries its own palette in CSS; it only needs the fi-color class.
   window.fiPaint = (function () {
     var HEX = { activity: "#5ECB76", sleep: "#935EF7", nap: "#5B0FCB" };
     var TOKEN = { activity: "green", sleep: "violet-55", nap: "violet-30" };
@@ -29,6 +78,10 @@
       if (!f) return null;
       if (!f.image) return f.color;
       try { return window.TRMNLPaint.toHighcharts(f); } catch (e) { return f.color; }
+    }
+    function markHome() {
+      var homes = document.querySelectorAll(".fi-home");
+      for (var i = 0; i < homes.length; i++) if (kind(homes[i]) !== "mono") homes[i].classList.add("fi-color");
     }
     function run() {
       var nodes = document.querySelectorAll("[data-fi]");
@@ -56,7 +109,12 @@
     }
     var tries = 0;
     function start() {
-      if (document.readyState === "loading" || !window.TRMNLPaint) {
+      if (document.readyState === "loading") {
+        if (++tries < 200) setTimeout(start, 50);
+        return;
+      }
+      markHome();
+      if (!window.TRMNLPaint) {
         if (++tries < 200) setTimeout(start, 50);
         return;
       }
@@ -66,7 +124,7 @@
   })();
   fiPaint.start();
 </script>
-{% if fi_view != "walk" %}
+{% if fi_view != "walk" and fi_view != "home" %}
 <script src="https://trmnl.com/js/highcharts/12.3.0/highcharts.js"></script>
 <script src="https://trmnl.com/js/highcharts/12.3.0/pattern-fill.js"></script>
 <script>
@@ -134,6 +192,55 @@
 </script>
 {% endif %}
 
+{% comment %} Fi Homescreen style: the app's Steps, Rest and rank cards. Fi does not share the
+   rank with this sign-in, so the third card shows this week's step-goal days on the podium. {% endcomment %}
+{% template fi_home %}
+<div class="fi-home fi-home--{{ size }}">
+  <div class="fi-card fi-steps">
+    <div style="min-width:0">
+      <div class="fi-h">Steps</div>
+      <div class="fi-big">{{ today.steps_label }}</div>
+      {% if strain %}
+      <div class="fi-cap">Strain:{{ strain.level }}</div>
+      <div class="fi-strain"><b>{{ strain.score }}</b><div class="fi-slider"><div class="fi-knob" style="left:{{ strain.pct }}%"></div></div></div>
+      {% endif %}
+    </div>
+    <svg class="fi-donut" viewBox="0 0 200 200">
+      <circle cx="100" cy="100" r="80" fill="none" stroke-width="40" style="stroke:var(--fi-track)"></circle>
+      <circle cx="100" cy="100" r="80" fill="none" stroke-width="40" stroke-linecap="round" stroke-dasharray="{{ today.ring_dash }}" transform="rotate(-90 100 100)" style="stroke:var(--fi-ring)"></circle>
+      <text x="100" y="101" text-anchor="middle" font-size="31" font-weight="600" font-family="Inter, Helvetica, Arial, sans-serif" style="fill:var(--fi-ring-text)">{{ today.pct }}%</text>
+      <text x="100" y="128" text-anchor="middle" font-size="21" font-family="Inter, Helvetica, Arial, sans-serif" style="fill:var(--fi-muted)">of goal</text>
+    </svg>
+    <svg class="fi-chev" viewBox="0 0 11 19"><path d="M2 2 L9 9.5 L2 17" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--fi-chev)"></path></svg>
+  </div>
+  <div class="fi-row">
+    <div class="fi-card">
+      <div class="fi-h">Rest</div>
+      <div class="fi-cap">Naps today</div>
+      <div class="fi-big">{{ today.nap }}</div>
+      <svg class="fi-chev" viewBox="0 0 11 19"><path d="M2 2 L9 9.5 L2 17" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--fi-chev)"></path></svg>
+      <div class="fi-art"><svg viewBox="0 0 420 100" preserveAspectRatio="xMidYMax meet">
+        <g style="fill:var(--fi-cloud-b)"><circle cx="300" cy="68" r="44"></circle><circle cx="362" cy="88" r="32"></circle><circle cx="250" cy="92" r="28"></circle><rect x="250" y="86" width="150" height="20"></rect></g>
+        <g style="fill:var(--fi-cloud-a)"><circle cx="150" cy="58" r="50"></circle><circle cx="82" cy="90" r="38"></circle><circle cx="220" cy="90" r="38"></circle><rect x="82" y="86" width="138" height="20"></rect></g>
+        <g fill="none" stroke-width="5" stroke-linejoin="round" style="stroke:var(--fi-zz)"><path d="M338 30 h16 l-16 16 h16"></path><path d="M362 8 h22 l-22 24 h22"></path></g>
+      </svg></div>
+    </div>
+    <div class="fi-card">
+      <div class="fi-h">Goals</div>
+      <div class="fi-cap">This week</div>
+      <div class="fi-big">{{ week.goal_days }}/{{ week.day_count }}<small>days</small></div>
+      <svg class="fi-chev" viewBox="0 0 11 19"><path d="M2 2 L9 9.5 L2 17" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--fi-chev)"></path></svg>
+      <div class="fi-art"><svg viewBox="0 0 420 100" preserveAspectRatio="xMidYMax meet">
+        <rect x="20" y="52" width="128" height="60" rx="8" style="fill:var(--fi-pod-side)"></rect>
+        <rect x="272" y="52" width="128" height="60" rx="8" style="fill:var(--fi-pod-side)"></rect>
+        <rect x="146" y="14" width="128" height="98" rx="8" style="fill:var(--fi-pod-mid)"></rect>
+        <g style="fill:var(--fi-trophy);stroke:var(--fi-trophy)"><path d="M320 0 h32 v4 q0 18 -16 22 q-16 -4 -16 -22 z" stroke="none"></path><path d="M320 4 h-7 q0 12 10 13 M352 4 h7 q0 12 -10 13" fill="none" stroke-width="4"></path><rect x="333" y="25" width="6" height="12" stroke="none"></rect><rect x="324" y="36" width="24" height="10" rx="2" stroke="none"></rect></g>
+      </svg></div>
+    </div>
+  </div>
+</div>
+{% endtemplate %}
+
 {% comment %} Walk timer: the ring, one drawing per state. {% endcomment %}
 {% template fi_ring %}
 {% assign ink = "#000" %}
@@ -184,12 +291,19 @@
 </div>
 {% endtemplate %}
 
-{% comment %} One title bar for every screen. compact drops the time where the bar is narrow. {% endcomment %}
+{% comment %} One title bar for every screen; the home screen carries the Fi logo, the others a
+   paw. compact drops the time where the bar is narrow. {% endcomment %}
 {% template fi_title_bar %}
 <div class="title_bar">
+  {% if view == "home" %}
+  <div class="image">
+    <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 100 100"><g fill="#000000"><path d="M12 83 L29 83 L44 36 Q47 29 56 29 L61 29 L65 17 L54 17 Q35 17 29 33 Z"/><path d="M17 54 L52 54 L56.5 40 L21.5 40 Z"/><path d="M67 29 L83 29 L87 17 L71 17 Z"/><path d="M48 83 L64 83 L78.5 37 L62.5 37 Z"/></g></svg>
+  </div>
+  {% else %}
   <div class="image image-stroke image-stroke--large">
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="#000000"><ellipse cx="4.8" cy="10.2" rx="2.2" ry="2.8"/><ellipse cx="9.3" cy="5.4" rx="2.2" ry="2.8"/><ellipse cx="14.7" cy="5.4" rx="2.2" ry="2.8"/><ellipse cx="19.2" cy="10.2" rx="2.2" ry="2.8"/><path d="M12 11c-3.5 0-7 4.6-7 7.4 0 1.9 1.5 2.6 3 2.6 1.6 0 2.6-.8 4-.8s2.4.8 4 .8c1.5 0 3-.7 3-2.6C19 15.6 15.5 11 12 11z"/></g></svg>
   </div>
+  {% endif %}
   <span class="title">{{ pet.name | default: "Fi Dog Tracker" }}</span>
   <span class="instance">{% if error %}Fi error{% elsif sample %}Sample data · add your Fi login{% elsif view == "walk" %}{% if demo %}Preview · {{ walk.label }}{% else %}{{ walk.label }}{% if walk.goal_note %} · {{ walk.goal_note }}{% endif %}{% unless compact %} · {{ updated }}{% endunless %}{% endif %}{% else %}{% if pet.status %}{{ pet.status }} · {% endif %}{% if pet.battery %}{{ pet.battery }}% battery · {% endif %}{{ updated }}{% endif %}</span>
 </div>
