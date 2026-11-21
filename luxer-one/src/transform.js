@@ -6,7 +6,7 @@
 const API = "https://resident-api.luxerone.com/resident_api/v2";
 const IDLE_HIDE_MS = 24 * 3600e3; // hide after a full day with nothing to pick up
 // The page the optional on-screen QR code opens. Fixed here on purpose: it is not a form setting.
-const PICKUP_PAGE = "";
+const PICKUP_PAGE = "https://justin-m-schmidt.github.io/luxer-one-locker-codes-page-for-trmnl/";
 // Form fields per person. The form reveals each next block once the email before it is filled in.
 const SLOTS = [1, 2, 3, 4, 5].map((n) => ({
   n,
