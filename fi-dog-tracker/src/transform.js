@@ -460,7 +460,11 @@ async function run(input) {
   const h12 = String(setting(input, "time_format") || "12") !== "24";
   const email = setting(input, "email");
   const password = setting(input, "password");
-  const wanted = String(setting(input, "pet_name") || "");
+  // The dog name only applies with "More than one" dog; "One dog" hides the field, so a name
+  // left in it must not pick a dog. Installs from before multi_dog existed have no value and
+  // keep using the name if one was entered.
+  const multiDog = String(setting(input, "multi_dog") || "");
+  const wanted = multiDog === "no" ? "" : String(setting(input, "pet_name") || "");
   const hours = parseFloat(String(setting(input, "max_hours") ?? "").replace(",", "."));
   const maxMs = (Number.isFinite(hours) ? Math.min(24, Math.max(0.5, hours)) : 4) * 3600e3;
   const preview = walkView ? String(setting(input, "preview_state") || "live") : "live";
