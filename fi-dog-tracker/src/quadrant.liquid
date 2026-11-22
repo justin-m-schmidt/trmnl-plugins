@@ -23,7 +23,7 @@
     <span class="label label--small lg:label--base">Steps today · {{ today.pct }}% of goal</span>
   </div>
   <div class="progress-bar progress-bar--small">
-    <div class="track"><div class="fill" data-fi="activity" style="width: {{ today.bar_pct }}%"></div></div>
+    <div class="track fi-cq-x"><div class="fill w--[{{ today.bar_pct | round | at_least: 0 | at_most: 100 }}cqw]" data-fi="activity"></div></div>
   </div>
   <div class="grid grid--cols-2">
     <div class="flex flex--col">

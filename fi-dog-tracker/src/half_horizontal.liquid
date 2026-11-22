@@ -1,4 +1,6 @@
 {% assign fi_view = view | default: trmnl.plugin_settings.custom_fields_values.view | default: "home" %}
+{% assign fi_steps_id = "fi-steps-" | append_random %}
+{% assign fi_sleep_id = "fi-sleep-" | append_random %}
 {% if error %}
   {% render "fi_error", error: error %}
 {% elsif fi_view == "home" %}
@@ -25,7 +27,7 @@
         <span class="label label--small lg:label--base">Steps today · {{ today.pct }}% of goal</span>
       </div>
       <div class="progress-bar progress-bar--small w--full">
-        <div class="track"><div class="fill" data-fi="activity" style="width: {{ today.bar_pct }}%"></div></div>
+        <div class="track fi-cq-x"><div class="fill w--[{{ today.bar_pct | round | at_least: 0 | at_most: 100 }}cqw]" data-fi="activity"></div></div>
       </div>
       <div class="flex flex--col">
         <span class="value value--small lg:value--large value--tnums">{{ today.sleep }}</span>
@@ -34,18 +36,17 @@
     </div>
     <div class="flex flex--col gap--xsmall h--full">
       <span class="label label--small lg:label--base">Steps · 7 days</span>
-      <div id="fi-steps-hh" class="w--full grow"></div>
+      <div id="{{ fi_steps_id }}" class="w--full grow"></div>
     </div>
     <div class="flex flex--col gap--xsmall h--full">
       <span class="label label--small lg:label--base">Sleep + naps (h) · 7 days</span>
-      <div id="fi-sleep-hh" class="w--full grow"></div>
+      <div id="{{ fi_sleep_id }}" class="w--full grow"></div>
     </div>
   </div>
 </div>
 <script>
-  var fiDaysHH = {{ days | json }};
-  fiChart("fi-steps-hh", "steps", fiDaysHH, {{ today.goal | default: 0 }}, { fill: true, font: 12, narrow: true, ticks: 3 });
-  fiChart("fi-sleep-hh", "sleep", fiDaysHH, 0, { fill: true, font: 12, narrow: true, ticks: 3 });
+  fiChart("{{ fi_steps_id }}", "steps", {{ days | json }}, {{ today.goal | default: 0 }}, { fill: true, font: 12, narrow: true, ticks: 3 });
+  fiChart("{{ fi_sleep_id }}", "sleep", {{ days | json }}, 0, { fill: true, font: 12, narrow: true, ticks: 3 });
 </script>
 {% endif %}
 {% render "fi_title_bar", view: fi_view, pet: pet, walk: walk, updated: updated, demo: demo, sample: sample, error: error %}

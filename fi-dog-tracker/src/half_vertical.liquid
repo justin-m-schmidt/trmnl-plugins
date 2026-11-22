@@ -1,4 +1,6 @@
 {% assign fi_view = view | default: trmnl.plugin_settings.custom_fields_values.view | default: "home" %}
+{% assign fi_steps_id = "fi-steps-" | append_random %}
+{% assign fi_sleep_id = "fi-sleep-" | append_random %}
 {% if error %}
   {% render "fi_error", error: error %}
 {% elsif fi_view == "home" %}
@@ -32,17 +34,16 @@
       <span class="label label--small lg:label--base">{{ today.pct }}% of {{ today.goal_label }} goal</span>
       <span class="value value--xxsmall lg:value--small">{{ today.distance }}</span>
     </div>
-    <div class="track"><div class="fill" data-fi="activity" style="width: {{ today.bar_pct }}%"></div></div>
+    <div class="track fi-cq-x"><div class="fill w--[{{ today.bar_pct | round | at_least: 0 | at_most: 100 }}cqw]" data-fi="activity"></div></div>
   </div>
   <span class="label label--small lg:label--base">Steps · 7 days (avg {{ week.avg_steps }})</span>
-  <div id="fi-steps-hv" class="w--full grow basis--0"></div>
+  <div id="{{ fi_steps_id }}" class="w--full grow basis--0"></div>
   <span class="label label--small lg:label--base">Sleep + naps (h) · avg {{ week.avg_sleep }}</span>
-  <div id="fi-sleep-hv" class="w--full grow basis--0"></div>
+  <div id="{{ fi_sleep_id }}" class="w--full grow basis--0"></div>
 </div>
 <script>
-  var fiDaysHV = {{ days | json }};
-  fiChart("fi-steps-hv", "steps", fiDaysHV, {{ today.goal | default: 0 }}, { fill: true, font: 12, narrow: true, ticks: 3 });
-  fiChart("fi-sleep-hv", "sleep", fiDaysHV, 0, { fill: true, font: 12, narrow: true, ticks: 3 });
+  fiChart("{{ fi_steps_id }}", "steps", {{ days | json }}, {{ today.goal | default: 0 }}, { fill: true, font: 12, narrow: true, ticks: 3 });
+  fiChart("{{ fi_sleep_id }}", "sleep", {{ days | json }}, 0, { fill: true, font: 12, narrow: true, ticks: 3 });
 </script>
 {% endif %}
 {% render "fi_title_bar", view: fi_view, compact: true, pet: pet, walk: walk, updated: updated, demo: demo, sample: sample, error: error %}
