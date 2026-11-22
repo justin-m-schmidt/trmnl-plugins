@@ -48,6 +48,8 @@
   .fi-home--hh { flex-direction: row; }
   .fi-home--hh .fi-steps { flex: 1.3; }
   .fi-home--hh .fi-row { flex: 2; }
+  .screen--portrait .fi-home--hh .fi-steps { flex-direction: column; align-items: flex-start; }
+  .screen--portrait .fi-home--hh .fi-donut { margin: 0 auto; flex: 1 1 0; min-height: 0; max-height: none; }
   .fi-home--q { gap: 8px; }
   .fi-home--q .fi-row { gap: 8px; }
   .fi-home--q .fi-card { padding: 6px 12px; border-radius: 12px; }
@@ -260,7 +262,7 @@
       {% if today.to_go != "0" %}<span class="{{ fi_l }}">To go</span><span class="{{ fi_s }}">{{ today.to_go }}</span>{% else %}<span class="{{ fi_l }}">Today</span><span class="{{ fi_s }}">Goal met</span>{% endif %}
       <span class="{{ fi_l }}">Distance</span><span class="{{ fi_s }}">{{ today.distance }}</span>
     </div>
-    <svg class="fi-donut" viewBox="0 0 200 200">
+    <svg class="fi-donut" viewBox="0 0 200 200" font-family="Inter, Helvetica, Arial, sans-serif">
       <circle cx="100" cy="100" r="80" fill="none" stroke-width="40" style="stroke:var(--fi-track)"></circle>
       <circle class="fi-ol" cx="100" cy="100" r="99" fill="none" stroke="#000" stroke-width="2"></circle>
       <circle class="fi-ol" cx="100" cy="100" r="61" fill="none" stroke="#000" stroke-width="2"></circle>
