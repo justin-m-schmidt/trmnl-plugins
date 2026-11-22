@@ -24,7 +24,7 @@
   </div>
   <div class="border--h-black w--full"></div>
   <div class="w--full">
-    {% assign rows = 3 %}{% assign pad = 7 %}{% if qr %}{% assign rows = 2 %}{% assign pad = 6 %}{% endif %}{% if xl %}{% if tall %}{% assign rows = rows | plus: 2 %}{% assign pad = 30 %}{% else %}{% assign rows = rows | plus: 1 %}{% endif %}{% endif %}{% render "lx_list", packages: packages, count: count, rows: rows, pad: pad, xl: xl %}
+    {% assign rows = 3 %}{% assign pad = 7 %}{% if qr %}{% assign rows = 2 %}{% assign pad = 6 %}{% endif %}{% if xl %}{% if tall %}{% assign rows = rows | plus: 2 %}{% assign pad = 50 %}{% else %}{% assign rows = rows | plus: 1 %}{% endif %}{% endif %}{% render "lx_list", packages: packages, count: count, rows: rows, pad: pad, xl: xl %}
   </div>
   {% if qr %}{% render "lx_qr", url: pickup_url, size: qsize %}{% endif %}
 </div>
