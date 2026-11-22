@@ -1,4 +1,6 @@
 {% assign fi_view = view | default: trmnl.plugin_settings.custom_fields_values.view | default: "home" %}
+{% assign fi_steps_id = "fi-steps-" | append_random %}
+{% assign fi_sleep_id = "fi-sleep-" | append_random %}
 {% if error %}
   {% render "fi_error", error: error %}
 {% elsif fi_view == "home" %}
@@ -30,7 +32,7 @@
           <span class="label label--small lg:label--base">{{ today.pct }}% of {{ today.goal_label }}</span>
           <span class="value value--xxsmall lg:value--small">{% if today.to_go != "0" %}{{ today.to_go }} to go{% else %}Goal reached{% endif %}</span>
         </div>
-        <div class="track"><div class="fill" data-fi="activity" style="width: {{ today.bar_pct }}%"></div></div>
+        <div class="track fi-cq-x"><div class="fill w--[{{ today.bar_pct | round | at_least: 0 | at_most: 100 }}cqw]" data-fi="activity"></div></div>
       </div>
     </div>
     <div class="flex flex--col gap--small">
@@ -86,18 +88,17 @@
   <div class="grid grid--cols-2 gap--large grow">
     <div class="flex flex--col gap--xsmall h--full">
       <span class="label label--small lg:label--base">Steps per day · dashed line = goal</span>
-      <div id="fi-steps-full" class="w--full grow"></div>
+      <div id="{{ fi_steps_id }}" class="w--full grow"></div>
     </div>
     <div class="flex flex--col gap--xsmall h--full">
       <span class="label label--small lg:label--base">Sleep per day (h) · <span data-fi="key" data-fi-color-text="light = night, dark = naps">dark = night, light = naps</span></span>
-      <div id="fi-sleep-full" class="w--full grow"></div>
+      <div id="{{ fi_sleep_id }}" class="w--full grow"></div>
     </div>
   </div>
 </div>
 <script>
-  var fiDays = {{ days | json }};
-  fiChart("fi-steps-full", "steps", fiDays, {{ today.goal | default: 0 }}, { fill: true, font: 14 });
-  fiChart("fi-sleep-full", "sleep", fiDays, 0, { fill: true, font: 14 });
+  fiChart("{{ fi_steps_id }}", "steps", {{ days | json }}, {{ today.goal | default: 0 }}, { fill: true, font: 14 });
+  fiChart("{{ fi_sleep_id }}", "sleep", {{ days | json }}, 0, { fill: true, font: 14 });
 </script>
 {% else %}
 <div class="layout layout--col layout--stretch-x layout--top gap--medium">
@@ -124,23 +125,22 @@
       <span class="label label--small lg:label--base">Today: {{ today.pct }}% of {{ today.goal_label }} step goal · {{ today.distance }}</span>
       <span class="value value--xxsmall lg:value--small">{% if today.to_go != "0" %}{{ today.to_go }} to go{% else %}Goal reached{% endif %}</span>
     </div>
-    <div class="track"><div class="fill" data-fi="activity" style="width: {{ today.bar_pct }}%"></div></div>
+    <div class="track fi-cq-x"><div class="fill w--[{{ today.bar_pct | round | at_least: 0 | at_most: 100 }}cqw]" data-fi="activity"></div></div>
   </div>
   <div class="grid grid--cols-2 gap--large grow">
     <div class="flex flex--col gap--xsmall h--full">
       <span class="label label--small lg:label--base">Steps per day · dashed line = goal</span>
-      <div id="fi-steps-both" class="w--full grow"></div>
+      <div id="{{ fi_steps_id }}" class="w--full grow"></div>
     </div>
     <div class="flex flex--col gap--xsmall h--full">
       <span class="label label--small lg:label--base">Sleep per day (h) · <span data-fi="key" data-fi-color-text="light = night, dark = naps">dark = night, light = naps</span></span>
-      <div id="fi-sleep-both" class="w--full grow"></div>
+      <div id="{{ fi_sleep_id }}" class="w--full grow"></div>
     </div>
   </div>
 </div>
 <script>
-  var fiDays = {{ days | json }};
-  fiChart("fi-steps-both", "steps", fiDays, {{ today.goal | default: 0 }}, { fill: true, font: 14 });
-  fiChart("fi-sleep-both", "sleep", fiDays, 0, { fill: true, font: 14 });
+  fiChart("{{ fi_steps_id }}", "steps", {{ days | json }}, {{ today.goal | default: 0 }}, { fill: true, font: 14 });
+  fiChart("{{ fi_sleep_id }}", "sleep", {{ days | json }}, 0, { fill: true, font: 14 });
 </script>
 {% endif %}
 {% render "fi_title_bar", view: fi_view, pet: pet, walk: walk, updated: updated, demo: demo, sample: sample, error: error %}
