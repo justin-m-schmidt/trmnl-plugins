@@ -1,3 +1,15 @@
+{% comment %}People set up in the form. The plugin code reads these fields to sign each person in; lx_people_set counts them for the layouts.{% endcomment %}
+{% assign lx_f = trmnl.plugin_settings.custom_fields_values %}
+{% assign lx_people_set = 0 %}
+{% if lx_f.email != blank %}{% assign lx_people_set = 1 %}{% endif %}
+{% if lx_f.email_2 != blank %}{% assign lx_people_set = 2 %}{% endif %}
+{% if lx_f.email_2 != blank and lx_f.email_3 != blank %}{% assign lx_people_set = 3 %}{% endif %}
+{% if lx_f.email_2 != blank and lx_f.email_3 != blank and lx_f.email_4 != blank %}{% assign lx_people_set = 4 %}{% endif %}
+{% if lx_f.email_2 != blank and lx_f.email_3 != blank and lx_f.email_4 != blank and lx_f.email_5 != blank %}{% assign lx_people_set = 5 %}{% endif %}
+{% assign lx_codes_set = 0 %}{% for k in "code,code_2,code_3,code_4,code_5" | split: "," %}{% if lx_f[k] != blank %}{% assign lx_codes_set = lx_codes_set | plus: 1 %}{% endif %}{% endfor %}
+{% assign lx_names_set = 0 %}{% for k in "nickname,nickname_2,nickname_3,nickname_4,nickname_5" | split: "," %}{% if lx_f[k] != blank %}{% assign lx_names_set = lx_names_set | plus: 1 %}{% endif %}{% endfor %}
+{% assign lx_fields = "email_2 code_2 nickname_2 email_3 code_3 nickname_3 email_4 code_4 nickname_4 email_5 code_5 nickname_5" %}
+
 {% template lx_package %}
 <svg xmlns="http://www.w3.org/2000/svg" width="{{ size }}" height="{{ size }}" viewBox="0 0 120 120" fill="none" stroke="#000" stroke-width="{{ stroke | default: 6 }}" stroke-linejoin="round" stroke-linecap="round" class="flex-none">
   <path d="M60 12 L104 34 L104 86 L60 108 L16 86 L16 34 Z" fill="#fff"></path>
@@ -42,7 +54,8 @@
 {% endtemplate %}
 
 {% template lx_qr %}
-<div class="flex flex--row flex--center-y gap--[12px] rounded--base p--2 bg--white{% if compact %} flex-none lg:portrait:w--full{% else %} w--full{% endif %}" style="border:2px solid #000;">
+{% assign qs = size %}{% if qs > 128 %}{% assign qs = 128 %}{% endif %}
+<div class="flex flex--row flex--center-y gap--[12px] rounded--base p--2 bg--white border--h-black border--v-black{% if compact %} flex-none lg:portrait:w--full{% else %} w--full{% endif %}">
   <div class="flex flex--col flex--left gap--[2px] stretch-x">
     {% if compact %}
     <span class="label lg:label--large text--bold"><span>Scan<br>for<br>codes</span></span>
@@ -51,7 +64,7 @@
     <span class="label label--small lg:label--base">Opens them on your phone</span>
     {% endif %}
   </div>
-  {% if size > 128 %}<div class="flex-none" style="width:{{ size }}px; height:{{ size }}px;">{{ url | qr_code }}</div>{% else %}<div class="flex-none w--[{{ size }}px] h--[{{ size }}px]">{{ url | qr_code }}</div>{% endif %}
+  <div class="flex-none w--[{{ qs }}px] h--[{{ qs }}px]">{{ url | qr_code }}</div>
 </div>
 {% endtemplate %}
 
