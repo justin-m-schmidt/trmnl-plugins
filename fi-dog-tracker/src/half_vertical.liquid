@@ -19,11 +19,11 @@
 <div class="layout layout--col layout--stretch-x layout--top gap--small">
   <div class="grid grid--cols-2">
     <div class="flex flex--col">
-      <span class="value value--base lg:value--xlarge value--tnums">{{ today.steps_label }}</span>
+      <span class="value value--base lg:value--xlarge lg:portrait:value--large value--tnums">{{ today.steps_label }}</span>
       <span class="label label--small lg:label--base">Steps today</span>
     </div>
     <div class="flex flex--col">
-      <span class="value value--base lg:value--xlarge value--tnums">{{ today.sleep }}</span>
+      <span class="value value--base lg:value--xlarge lg:portrait:value--large value--tnums">{{ today.sleep }}</span>
       <span class="label label--small lg:label--base">{{ today.sleep_title | default: "Sleep" }} · +{{ today.nap }} naps</span>
     </div>
   </div>

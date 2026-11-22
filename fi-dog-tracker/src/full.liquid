@@ -40,46 +40,46 @@
     </div>
   </div>
   <div class="divider"></div>
-  <div class="grid grid--cols-4">
+  <div class="grid grid--cols-4 lg:portrait:grid--cols-2">
     <div class="item"><div class="meta"></div><div class="content">
-      <span class="value value--base lg:value--xlarge value--tnums">{{ today.distance }}</span>
+      <span class="value value--base lg:value--large value--tnums">{{ today.distance }}</span>
       <span class="label label--small lg:label--base">Distance today</span>
     </div></div>
     <div class="item"><div class="meta"></div><div class="content">
-      <span class="value value--base lg:value--xlarge value--tnums">{{ week.avg_steps }}</span>
+      <span class="value value--base lg:value--large value--tnums">{{ week.avg_steps }}</span>
       <span class="label label--small lg:label--base">Avg steps, 7 days</span>
     </div></div>
     <div class="item"><div class="meta"></div><div class="content">
-      <span class="value value--base lg:value--xlarge value--tnums">{{ week.avg_sleep }}</span>
+      <span class="value value--base lg:value--large value--tnums">{{ week.avg_sleep }}</span>
       <span class="label label--small lg:label--base">Avg sleep, 7 days</span>
     </div></div>
     <div class="item"><div class="meta"></div><div class="content">
-      <span class="value value--base lg:value--xlarge value--tnums">{% if pet.battery %}{{ pet.battery }}%{% else %}–{% endif %}</span>
+      <span class="value value--base lg:value--large value--tnums">{% if pet.battery %}{{ pet.battery }}%{% else %}–{% endif %}</span>
       <span class="label label--small lg:label--base">Collar battery</span>
     </div></div>
   </div>
 </div>
 {% elsif fi_view == "week" %}
 <div class="layout layout--col layout--stretch-x layout--top gap--medium">
-  <div class="grid grid--cols-5">
+  <div class="grid grid--cols-5 lg:portrait:grid--cols-3">
     <div class="item"><div class="meta"></div><div class="content">
-      <span class="value value--small lg:value--large value--tnums">{{ week.steps_label }}</span>
+      <span class="value value--small lg:value--base value--tnums">{{ week.steps_label }}</span>
       <span class="label label--small lg:label--base">Steps, 7 days</span>
     </div></div>
     <div class="item"><div class="meta"></div><div class="content">
-      <span class="value value--small lg:value--large value--tnums">{{ week.avg_steps }}</span>
+      <span class="value value--small lg:value--base value--tnums">{{ week.avg_steps }}</span>
       <span class="label label--small lg:label--base">Avg per day</span>
     </div></div>
     <div class="item"><div class="meta"></div><div class="content">
-      <span class="value value--small lg:value--large value--tnums">{{ week.goal_days }}/{{ week.day_count }}</span>
+      <span class="value value--small lg:value--base value--tnums">{{ week.goal_days }}/{{ week.day_count }}</span>
       <span class="label label--small lg:label--base">Goal days</span>
     </div></div>
     <div class="item"><div class="meta"></div><div class="content">
-      <span class="value value--small lg:value--large value--tnums">{{ week.avg_sleep }}</span>
+      <span class="value value--small lg:value--base value--tnums">{{ week.avg_sleep }}</span>
       <span class="label label--small lg:label--base">Avg sleep</span>
     </div></div>
     <div class="item"><div class="meta"></div><div class="content">
-      <span class="value value--small lg:value--large value--tnums">{{ week.avg_nap }}</span>
+      <span class="value value--small lg:value--base value--tnums">{{ week.avg_nap }}</span>
       <span class="label label--small lg:label--base">Avg naps</span>
     </div></div>
   </div>
@@ -101,21 +101,21 @@
 </script>
 {% else %}
 <div class="layout layout--col layout--stretch-x layout--top gap--medium">
-  <div class="grid grid--cols-4">
+  <div class="grid grid--cols-4 lg:portrait:grid--cols-2">
     <div class="item"><div class="meta"></div><div class="content">
-      <span class="value value--base lg:value--xlarge value--tnums">{{ today.steps_label }}</span>
+      <span class="value value--base lg:value--large value--tnums">{{ today.steps_label }}</span>
       <span class="label label--small lg:label--base">Steps today</span>
     </div></div>
     <div class="item"><div class="meta"></div><div class="content">
-      <span class="value value--base lg:value--xlarge value--tnums">{{ today.sleep }}</span>
+      <span class="value value--base lg:value--large value--tnums">{{ today.sleep }}</span>
       <span class="label label--small lg:label--base">{{ today.sleep_title | default: "Sleep today" }} · +{{ today.nap }} naps</span>
     </div></div>
     <div class="item"><div class="meta"></div><div class="content">
-      <span class="value value--base lg:value--xlarge value--tnums">{{ week.avg_steps }}</span>
+      <span class="value value--base lg:value--large value--tnums">{{ week.avg_steps }}</span>
       <span class="label label--small lg:label--base">Avg steps, 7 days</span>
     </div></div>
     <div class="item"><div class="meta"></div><div class="content">
-      <span class="value value--base lg:value--xlarge value--tnums">{{ week.avg_sleep }}</span>
+      <span class="value value--base lg:value--large value--tnums">{{ week.avg_sleep }}</span>
       <span class="label label--small lg:label--base">Avg sleep, 7 days</span>
     </div></div>
   </div>
