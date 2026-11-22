@@ -4,28 +4,28 @@
     <div class="item">
       <div class="meta"></div>
       <div class="content">
-        <span class="value value--xlarge lg:value--xxlarge value--tnums" data-fit-value="true">{{ fide }}</span>
+        <span class="value value--xlarge lg:value--xxlarge value--tnums" data-value-fit="true">{{ fide }}</span>
         <span class="label label--small lg:label--base">FIDE</span>
       </div>
     </div>
     <div class="item">
       <div class="meta"></div>
       <div class="content">
-        <span class="value value--xlarge lg:value--xxlarge value--tnums" data-fit-value="true">{{ chess_bullet.best.rating }}</span>
+        <span class="value value--xlarge lg:value--xxlarge value--tnums" data-value-fit="true">{{ chess_bullet.best.rating }}</span>
         <span class="label label--small lg:label--base">Bullet</span>
       </div>
     </div>
     <div class="item">
       <div class="meta"></div>
       <div class="content">
-        <span class="value value--xlarge lg:value--xxlarge value--tnums" data-fit-value="true">{{ chess_blitz.best.rating }}</span>
+        <span class="value value--xlarge lg:value--xxlarge value--tnums" data-value-fit="true">{{ chess_blitz.best.rating }}</span>
         <span class="label label--small lg:label--base">Blitz</span>
       </div>
     </div>
     <div class="item">
       <div class="meta"></div>
       <div class="content">
-        <span class="value value--xlarge lg:value--xxlarge value--tnums" data-fit-value="true">{{ chess_rapid.best.rating }}</span>
+        <span class="value value--xlarge lg:value--xxlarge value--tnums" data-value-fit="true">{{ chess_rapid.best.rating }}</span>
         <span class="label label--small lg:label--base">Rapid</span>
       </div>
     </div>
@@ -42,10 +42,10 @@
       </div>
       <div class="track"><div class="fill" style="width: {{ bullet_win_pct }}%"></div></div>
     </div>
-    <div class="flex flex--row gap--medium">
-      <span class="label label--small lg:label--base">{{ chess_bullet.record.win | divided_by: 1000.0 | round: 1 }}k W</span>
-      <span class="label label--small lg:label--base">{{ chess_bullet.record.draw }} D</span>
-      <span class="label label--small lg:label--base">{{ chess_bullet.record.loss | divided_by: 1000.0 | round: 1 }}k L</span>
+    <div class="flex flex--row gap--medium lg:gap--large">
+      <span class="label label--small lg:label--large">{{ chess_bullet.record.win | divided_by: 1000.0 | round: 1 }}k W</span>
+      <span class="label label--small lg:label--large">{{ chess_bullet.record.draw }} D</span>
+      <span class="label label--small lg:label--large">{{ chess_bullet.record.loss | divided_by: 1000.0 | round: 1 }}k L</span>
     </div>
   </div>
   <div class="flex flex--col gap--small flex--stretch-x w--full">
@@ -58,10 +58,10 @@
       </div>
       <div class="track"><div class="fill" style="width: {{ blitz_win_pct }}%"></div></div>
     </div>
-    <div class="flex flex--row gap--medium">
-      <span class="label label--small lg:label--base">{{ chess_blitz.record.win | divided_by: 1000.0 | round: 1 }}k W</span>
-      <span class="label label--small lg:label--base">{{ chess_blitz.record.draw | divided_by: 1000.0 | round: 1 }}k D</span>
-      <span class="label label--small lg:label--base">{{ chess_blitz.record.loss | divided_by: 1000.0 | round: 1 }}k L</span>
+    <div class="flex flex--row gap--medium lg:gap--large">
+      <span class="label label--small lg:label--large">{{ chess_blitz.record.win | divided_by: 1000.0 | round: 1 }}k W</span>
+      <span class="label label--small lg:label--large">{{ chess_blitz.record.draw | divided_by: 1000.0 | round: 1 }}k D</span>
+      <span class="label label--small lg:label--large">{{ chess_blitz.record.loss | divided_by: 1000.0 | round: 1 }}k L</span>
     </div>
   </div>
   <div class="divider"></div>

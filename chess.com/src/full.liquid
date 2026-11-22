@@ -4,28 +4,28 @@
     <div class="item">
       <div class="meta"></div>
       <div class="content">
-        <span class="value value--xxlarge lg:value--xxxlarge value--tnums" data-fit-value="true">{{ fide }}</span>
+        <span class="value value--xxlarge lg:value--xxxlarge value--tnums" data-value-fit="true">{{ fide }}</span>
         <span class="label lg:label--large">FIDE Rating</span>
       </div>
     </div>
     <div class="item">
       <div class="meta"></div>
       <div class="content">
-        <span class="value value--xxlarge lg:value--xxxlarge value--tnums" data-fit-value="true">{{ chess_bullet.best.rating }}</span>
+        <span class="value value--xxlarge lg:value--xxxlarge value--tnums" data-value-fit="true">{{ chess_bullet.best.rating }}</span>
         <span class="label lg:label--large">Bullet Best</span>
       </div>
     </div>
     <div class="item">
       <div class="meta"></div>
       <div class="content">
-        <span class="value value--xxlarge lg:value--xxxlarge value--tnums" data-fit-value="true">{{ chess_blitz.best.rating }}</span>
+        <span class="value value--xxlarge lg:value--xxxlarge value--tnums" data-value-fit="true">{{ chess_blitz.best.rating }}</span>
         <span class="label lg:label--large">Blitz Best</span>
       </div>
     </div>
     <div class="item">
       <div class="meta"></div>
       <div class="content">
-        <span class="value value--xxlarge lg:value--xxxlarge value--tnums" data-fit-value="true">{{ chess_rapid.best.rating }}</span>
+        <span class="value value--xxlarge lg:value--xxxlarge value--tnums" data-value-fit="true">{{ chess_rapid.best.rating }}</span>
         <span class="label lg:label--large">Rapid Best</span>
       </div>
     </div>
@@ -37,52 +37,56 @@
       <span class="label lg:label--large">Bullet Record</span>
       {% assign bullet_total = chess_bullet.record.win | plus: chess_bullet.record.draw | plus: chess_bullet.record.loss %}
       {% assign bullet_win_pct = chess_bullet.record.win | times: 100 | divided_by: bullet_total %}
-      <div class="flex flex--row gap--small">
+      <div class="flex flex--row gap--small lg:gap--large">
         <div class="flex flex--col gap--none">
-          <span class="value value--small lg:value--base value--tnums">{{ chess_bullet.record.win | divided_by: 1000.0 | round: 1 }}k</span>
+          <span class="value value--small lg:value--large value--tnums">{{ chess_bullet.record.win | divided_by: 1000.0 | round: 1 }}k</span>
           <span class="label label--small lg:label--base">Win</span>
         </div>
         <div class="flex flex--col gap--none">
-          <span class="value value--small lg:value--base value--tnums">{{ chess_bullet.record.draw }}</span>
+          <span class="value value--small lg:value--large value--tnums">{{ chess_bullet.record.draw }}</span>
           <span class="label label--small lg:label--base">Draw</span>
         </div>
         <div class="flex flex--col gap--none">
-          <span class="value value--small lg:value--base value--tnums">{{ chess_bullet.record.loss | divided_by: 1000.0 | round: 1 }}k</span>
+          <span class="value value--small lg:value--large value--tnums">{{ chess_bullet.record.loss | divided_by: 1000.0 | round: 1 }}k</span>
           <span class="label label--small lg:label--base">Loss</span>
-        </div>
-        <div class="flex flex--col gap--none">
-          <span class="value value--small lg:value--base value--tnums">{{ bullet_win_pct }}%</span>
-          <span class="label label--small lg:label--base">Win Rate</span>
         </div>
       </div>
       <div class="progress-bar progress-bar--large w--full">
-        <div class="track"><div class="fill" style="width: {{ bullet_win_pct }}%"></div></div>
+        <div class="content">
+          <span class="label label--small lg:label--base">Win Rate</span>
+          <span class="value value--small lg:value--large value--tnums" data-value-fit="true">{{ bullet_win_pct }}%</span>
+        </div>
+        <div class="track">
+          <div class="fill" style="width: {{ bullet_win_pct }}%"></div>
+        </div>
       </div>
     </div>
     <div class="flex flex--col gap--small">
       <span class="label lg:label--large">Blitz Record</span>
       {% assign blitz_total = chess_blitz.record.win | plus: chess_blitz.record.draw | plus: chess_blitz.record.loss %}
       {% assign blitz_win_pct = chess_blitz.record.win | times: 100 | divided_by: blitz_total %}
-      <div class="flex flex--row gap--small">
+      <div class="flex flex--row gap--small lg:gap--large">
         <div class="flex flex--col gap--none">
-          <span class="value value--small lg:value--base value--tnums">{{ chess_blitz.record.win | divided_by: 1000.0 | round: 1 }}k</span>
+          <span class="value value--small lg:value--large value--tnums">{{ chess_blitz.record.win | divided_by: 1000.0 | round: 1 }}k</span>
           <span class="label label--small lg:label--base">Win</span>
         </div>
         <div class="flex flex--col gap--none">
-          <span class="value value--small lg:value--base value--tnums">{{ chess_blitz.record.draw | divided_by: 1000.0 | round: 1 }}k</span>
+          <span class="value value--small lg:value--large value--tnums">{{ chess_blitz.record.draw | divided_by: 1000.0 | round: 1 }}k</span>
           <span class="label label--small lg:label--base">Draw</span>
         </div>
         <div class="flex flex--col gap--none">
-          <span class="value value--small lg:value--base value--tnums">{{ chess_blitz.record.loss | divided_by: 1000.0 | round: 1 }}k</span>
+          <span class="value value--small lg:value--large value--tnums">{{ chess_blitz.record.loss | divided_by: 1000.0 | round: 1 }}k</span>
           <span class="label label--small lg:label--base">Loss</span>
-        </div>
-        <div class="flex flex--col gap--none">
-          <span class="value value--small lg:value--base value--tnums">{{ blitz_win_pct }}%</span>
-          <span class="label label--small lg:label--base">Win Rate</span>
         </div>
       </div>
       <div class="progress-bar progress-bar--large w--full">
-        <div class="track"><div class="fill" style="width: {{ blitz_win_pct }}%"></div></div>
+        <div class="content">
+          <span class="label label--small lg:label--base">Win Rate</span>
+          <span class="value value--small lg:value--large value--tnums" data-value-fit="true">{{ blitz_win_pct }}%</span>
+        </div>
+        <div class="track">
+          <div class="fill" style="width: {{ blitz_win_pct }}%"></div>
+        </div>
       </div>
     </div>
   </div>

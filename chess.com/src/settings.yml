@@ -8,8 +8,8 @@ framework_version: 3.1.1
 serverless_language: node
 refresh_interval_floor: ''
 polling_url: https://api.chess.com/pub/player/{{ username }}/stats
-polling_headers: ''
-polling_body: ''
+polling_headers:
+polling_body:
 id: 371719
 oauth_enabled: 'false'
 oauth_pkce_enabled: 'no'
@@ -23,7 +23,8 @@ custom_fields:
   name: About This Plugin
   category: education,personal
   field_type: author_bio
-  description: Show stats from your chess.com profile. Created by Justin (github.com/justin-m-schmidt).
+  description: Show your chess.com stats on TRMNL - best and current ratings for bullet, blitz and rapid, your FIDE rating, win/draw/loss records with win rates, and your tactics and Puzzle Rush bests. Enter your chess.com username and the screen refreshes on its own. Created by Justin.
+  email_address: trmnl_plugin_support@pobox.com
   github_url: https://github.com/justin-m-schmidt
 name: Chess.com
 description: Your chess.com stats at a glance
