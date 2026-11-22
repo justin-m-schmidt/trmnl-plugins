@@ -22,6 +22,22 @@
   .fi-1bit .fi-card { border: 2px solid #000; }
   .fi-1bit .fi-slider { border: 2px solid #000; box-sizing: border-box; }
   .fi-ol { display: none; }
+  /* SVG paints from the palette above, as classes rather than inline styles. */
+  .fi-s-track { stroke: var(--fi-track); }
+  .fi-s-ring { stroke: var(--fi-ring); }
+  .fi-f-ring-text { fill: var(--fi-ring-text); }
+  .fi-f-muted { fill: var(--fi-muted); }
+  .fi-s-chev { stroke: var(--fi-chev); }
+  .fi-f-cloud-a { fill: var(--fi-cloud-a); }
+  .fi-f-cloud-b { fill: var(--fi-cloud-b); }
+  .fi-s-zz { stroke: var(--fi-zz); }
+  .fi-f-pod-side { fill: var(--fi-pod-side); }
+  .fi-f-pod-mid { fill: var(--fi-pod-mid); }
+  .fi-trophy { fill: var(--fi-trophy); stroke: var(--fi-trophy); }
+  /* Positions and widths come from the framework's w--[Ncqw] classes: inside a width
+     container, N cqw is N% of it. A lane puts a spacer of that width before the mark. */
+  .fi-cq-x { container-type: inline-size; }
+  .fi-lane { position: absolute; inset: 0; display: flex; }
   .fi-1bit .fi-ol { display: inline; }
   .fi-card { container-type: size; background: var(--fi-card); border-radius: 18px; position: relative; overflow: hidden;
     box-sizing: border-box; min-width: 0; min-height: 0; padding: 10px 18px; display: flex; flex-direction: column; }
@@ -33,10 +49,11 @@
   .fi-steps { flex: 1.25; flex-direction: row; align-items: center; gap: 4cqw; }
   .fi-steps-text { flex: none; display: flex; flex-direction: column; }
   .fi-strain { display: flex; align-items: center; gap: 10px; }
-  .fi-slider { position: relative; width: min(40cqh, 22cqw); height: 10px; border-radius: 99px;
+  .fi-slider { position: relative; container-type: inline-size; width: min(40cqh, 22cqw); height: 10px; border-radius: 99px;
     background: linear-gradient(90deg, var(--fi-slider-a), var(--fi-slider-b)); }
-  .fi-knob { position: absolute; top: 50%; width: 15px; height: 15px; border-radius: 50%; box-sizing: border-box;
-    background: var(--fi-knob); border: 3px solid var(--fi-card); transform: translate(-50%, -50%); }
+  .fi-slider .fi-lane { align-items: center; }
+  .fi-knob { flex: none; width: 15px; height: 15px; border-radius: 50%; box-sizing: border-box;
+    background: var(--fi-knob); border: 3px solid var(--fi-card); transform: translateX(-50%); }
   .fi-facts { flex: none; display: flex; flex-direction: column; justify-content: center; gap: 4px;
     border-left: 2px solid var(--fi-track); padding-left: 4cqw; }
   .fi-1bit .fi-facts { border-left-style: dotted; border-left-color: #000; }
@@ -63,10 +80,11 @@
   .fi-ring--hh { width: min(90cqh, 30cqw); height: min(90cqh, 30cqw); }
   .fi-ring--hv { width: min(60cqh, 80cqw); height: min(60cqh, 80cqw); }
   .fi-ring--q { width: min(86cqh, 42cqw); height: min(86cqh, 42cqw); }
-  .fi-strip-bar { position: relative; height: 26px; border-bottom: 2px solid #000; }
-  .fi-strip-bar .fi-blk { position: absolute; bottom: 0; min-width: 6px; height: 16px; box-sizing: border-box; background: #000; }
+  .fi-strip-bar { position: relative; container-type: inline-size; height: 26px; border-bottom: 2px solid #000; }
+  .fi-strip-bar .fi-lane { align-items: flex-end; }
+  .fi-strip-bar .fi-blk { flex: none; min-width: 6px; height: 16px; box-sizing: border-box; background: #000; }
   .fi-strip-bar .fi-blk--live { border: 2px solid #000; border-bottom: 0; background: #fff; }
-  .fi-strip-bar .fi-now { position: absolute; bottom: 0; width: 0; height: 100%; border-left: 2px dotted #000; }
+  .fi-strip-bar .fi-now { flex: none; width: 0; height: 100%; border-left: 2px dotted #000; }
   .screen--lg .fi-strip-bar { height: 44px; border-bottom-width: 3px; }
   .screen--lg .fi-strip-bar .fi-blk { height: 28px; }
 </style>
@@ -253,7 +271,7 @@
       {% if strain %}
       <div class="fi-strain-block">
         <span class="{{ fi_l }}">Strain · {{ strain.level | downcase | capitalize }}</span>
-        <div class="fi-strain"><span class="{{ fi_s }}">{{ strain.score }}</span><div class="fi-slider"><div class="fi-knob" style="left:{{ strain.pct }}%"></div></div></div>
+        <div class="fi-strain"><span class="{{ fi_s }}">{{ strain.score }}</span><div class="fi-slider"><div class="fi-lane"><div class="shrink-0 w--[{{ strain.pct | round | at_least: 0 | at_most: 100 }}cqw]"></div><div class="fi-knob"></div></div></div></div>
       </div>
       {% endif %}
     </div>
@@ -263,12 +281,12 @@
       <span class="{{ fi_l }}">Distance</span><span class="{{ fi_s }}">{{ today.distance }}</span>
     </div>
     <svg class="fi-donut" viewBox="0 0 200 200" font-family="Inter, Helvetica, Arial, sans-serif">
-      <circle cx="100" cy="100" r="80" fill="none" stroke-width="40" style="stroke:var(--fi-track)"></circle>
+      <circle class="fi-s-track" cx="100" cy="100" r="80" fill="none" stroke-width="40"></circle>
       <circle class="fi-ol" cx="100" cy="100" r="99" fill="none" stroke="#000" stroke-width="2"></circle>
       <circle class="fi-ol" cx="100" cy="100" r="61" fill="none" stroke="#000" stroke-width="2"></circle>
-      <circle cx="100" cy="100" r="80" fill="none" stroke-width="40" stroke-linecap="round" stroke-dasharray="{{ today.ring_dash }}" transform="rotate(-90 100 100)" style="stroke:var(--fi-ring)"></circle>
-      <text x="100" y="101" text-anchor="middle" font-size="31" font-weight="600" style="fill:var(--fi-ring-text)">{{ today.pct }}%</text>
-      <text x="100" y="128" text-anchor="middle" font-size="21" style="fill:var(--fi-muted)">of goal</text>
+      <circle cx="100" cy="100" r="80" fill="none" stroke-width="40" stroke-linecap="round" stroke-dasharray="{{ today.ring_dash }}" transform="rotate(-90 100 100)" class="fi-s-ring"></circle>
+      <text x="100" y="101" text-anchor="middle" font-size="31" font-weight="600" class="fi-f-ring-text">{{ today.pct }}%</text>
+      <text x="100" y="128" text-anchor="middle" font-size="21" class="fi-f-muted">of goal</text>
     </svg>
   </div>
   <div class="fi-row">
@@ -276,26 +294,26 @@
       <span class="{{ fi_t }}">Rest</span>
       <div class="fi-capline"><span class="{{ fi_l }}">Naps today</span><span class="{{ fi_l }}">Night {{ today.sleep }}</span></div>
       <span class="{{ fi_v2 }}">{{ today.nap }}</span>
-      <svg class="fi-chev" viewBox="0 0 11 19"><path d="M2 2 L9 9.5 L2 17" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--fi-chev)"></path></svg>
+      <svg class="fi-chev" viewBox="0 0 11 19"><path d="M2 2 L9 9.5 L2 17" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="fi-s-chev"></path></svg>
       <div class="fi-art"><svg viewBox="0 0 420 100" preserveAspectRatio="xMidYMax meet">
         <g class="fi-ol" fill="#000" stroke="#000" stroke-width="8"><circle cx="300" cy="68" r="44"></circle><circle cx="362" cy="88" r="32"></circle><circle cx="250" cy="92" r="28"></circle><rect x="250" y="86" width="150" height="20"></rect></g>
-        <g style="fill:var(--fi-cloud-b)"><circle cx="300" cy="68" r="44"></circle><circle cx="362" cy="88" r="32"></circle><circle cx="250" cy="92" r="28"></circle><rect x="250" y="86" width="150" height="20"></rect></g>
-        <g style="fill:var(--fi-cloud-a)"><circle cx="150" cy="58" r="50"></circle><circle cx="82" cy="90" r="38"></circle><circle cx="220" cy="90" r="38"></circle><rect x="82" y="86" width="138" height="20"></rect></g>
-        <g fill="none" stroke-width="5" stroke-linejoin="round" style="stroke:var(--fi-zz)"><path d="M338 30 h16 l-16 16 h16"></path><path d="M362 8 h22 l-22 24 h22"></path></g>
+        <g class="fi-f-cloud-b"><circle cx="300" cy="68" r="44"></circle><circle cx="362" cy="88" r="32"></circle><circle cx="250" cy="92" r="28"></circle><rect x="250" y="86" width="150" height="20"></rect></g>
+        <g class="fi-f-cloud-a"><circle cx="150" cy="58" r="50"></circle><circle cx="82" cy="90" r="38"></circle><circle cx="220" cy="90" r="38"></circle><rect x="82" y="86" width="138" height="20"></rect></g>
+        <g fill="none" stroke-width="5" stroke-linejoin="round" class="fi-s-zz"><path d="M338 30 h16 l-16 16 h16"></path><path d="M362 8 h22 l-22 24 h22"></path></g>
       </svg></div>
     </div>
     <div class="fi-card">
       <span class="{{ fi_t }}">Goals</span>
       <div class="fi-capline"><span class="{{ fi_l }}">This week</span><span class="{{ fi_l }}">Avg {{ week.avg_steps }}</span></div>
       <span class="{{ fi_v2 }}">{{ week.goal_days }}/{{ week.day_count }}{% unless size == "q" %} days{% endunless %}</span>
-      <svg class="fi-chev" viewBox="0 0 11 19"><path d="M2 2 L9 9.5 L2 17" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--fi-chev)"></path></svg>
+      <svg class="fi-chev" viewBox="0 0 11 19"><path d="M2 2 L9 9.5 L2 17" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" class="fi-s-chev"></path></svg>
       <div class="fi-art"><svg viewBox="0 0 420 100" preserveAspectRatio="xMidYMax meet">
-        <rect x="20" y="52" width="128" height="60" rx="8" style="fill:var(--fi-pod-side)"></rect>
-        <rect x="272" y="52" width="128" height="60" rx="8" style="fill:var(--fi-pod-side)"></rect>
+        <rect x="20" y="52" width="128" height="60" rx="8" class="fi-f-pod-side"></rect>
+        <rect x="272" y="52" width="128" height="60" rx="8" class="fi-f-pod-side"></rect>
         <rect class="fi-ol" x="20" y="52" width="128" height="60" rx="8" fill="none" stroke="#000" stroke-width="6"></rect>
         <rect class="fi-ol" x="272" y="52" width="128" height="60" rx="8" fill="none" stroke="#000" stroke-width="6"></rect>
-        <rect x="146" y="14" width="128" height="98" rx="8" style="fill:var(--fi-pod-mid)"></rect>
-        <g style="fill:var(--fi-trophy);stroke:var(--fi-trophy)"><path d="M320 0 h32 v4 q0 18 -16 22 q-16 -4 -16 -22 z" stroke="none"></path><path d="M320 4 h-7 q0 12 10 13 M352 4 h7 q0 12 -10 13" fill="none" stroke-width="4"></path><rect x="333" y="25" width="6" height="12" stroke="none"></rect><rect x="324" y="36" width="24" height="10" rx="2" stroke="none"></rect></g>
+        <rect x="146" y="14" width="128" height="98" rx="8" class="fi-f-pod-mid"></rect>
+        <g class="fi-trophy"><path d="M320 0 h32 v4 q0 18 -16 22 q-16 -4 -16 -22 z" stroke="none"></path><path d="M320 4 h-7 q0 12 10 13 M352 4 h7 q0 12 -10 13" fill="none" stroke-width="4"></path><rect x="333" y="25" width="6" height="12" stroke="none"></rect><rect x="324" y="36" width="24" height="10" rx="2" stroke="none"></rect></g>
       </svg></div>
     </div>
   </div>
@@ -345,8 +363,8 @@
 </div>
 <div class="w--full">
   <div class="fi-strip-bar">
-    {% for b in strip.blocks %}<div {% unless b.live %}data-fi="activity" {% endunless %}class="fi-blk{% if b.live %} fi-blk--live{% endif %}" style="left:{{ b.left }}%; width:{{ b.width }}%;"></div>{% endfor %}
-    {% if strip.show_now %}<div class="fi-now" style="left:{{ strip.now }}%;"></div>{% endif %}
+    {% for b in strip.blocks %}<div class="fi-lane"><div class="shrink-0 w--[{{ b.left | round | at_least: 0 | at_most: 100 }}cqw]"></div><div {% unless b.live %}data-fi="activity" {% endunless %}class="fi-blk{% if b.live %} fi-blk--live{% endif %} w--[{{ b.width | round | at_least: 1 | at_most: 100 }}cqw]"></div></div>{% endfor %}
+    {% if strip.show_now %}<div class="fi-lane"><div class="shrink-0 w--[{{ strip.now | round | at_least: 0 | at_most: 100 }}cqw]"></div><div class="fi-now"></div></div>{% endif %}
   </div>
   <div class="flex flex--row flex--between w--full">{% for a in axis %}<span class="label label--small lg:label--base">{{ a }}</span>{% endfor %}</div>
 </div>
